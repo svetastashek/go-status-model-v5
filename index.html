@@ -1,0 +1,1512 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тест статусной модели (4 вариант)</title>
+    <link rel="preload" href="./assets/fonts/LabGrotesque-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./assets/fonts/LabGrotesque-Medium.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./assets/fonts/LabGrotesque-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="./assets/lab-grotesque.css" />
+    <link rel="stylesheet" href="./assets/typography.css" />
+    <link rel="stylesheet" href="./styles.css?v=20260824-26" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Основная навигация">
+        <div class="brand"><button id="brandLogo" class="brand-logo" type="button" aria-label="Обновить страницу"><img src="./assets/icons/logo.svg" alt="Контур Логистика" /></button></div>
+
+        <nav class="main-nav">
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/notification-bell-alarm.svg" alt="" /></span>Уведомления</button>
+          <div class="nav-separator"></div>
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/plus-square.svg" alt="" /></span>Создать документ</button>
+          <button class="nav-item document-menu-item t-body-s" type="button" data-document-menu="assignments"><span class="icon"><img src="./assets/icons/book-notepad-24-regular.svg" alt="" /></span>Поручения</button>
+          <button class="nav-item document-menu-item t-body-s" type="button" data-document-menu="receipts"><span class="icon"><img src="./assets/icons/clipboard-check-24-regular.svg" alt="" /></span>Расписки</button>
+          <button class="nav-item document-menu-item t-body-s" type="button" data-document-menu="applications"><span class="icon"><img src="./assets/icons/docs-24-regular.svg" alt="" /></span>Заказы-заявки</button>
+          <button class="nav-item document-menu-item active t-body-s" type="button" data-document-menu="invoices" aria-current="page"><span class="icon"><img src="./assets/icons/delivery-box-iso-closed-24-regular.svg" alt="" /></span>Накладные</button>
+          <button id="archiveMenuItem" class="nav-item archive-menu-item t-body-s" type="button"><span class="icon"><img src="./assets/icons/archive-box-open-docs-24-regular.svg" alt="" /></span>Архив</button>
+          <button class="nav-item trash-menu-item t-body-s" type="button" data-view="archive-trash"><span class="icon"><img src="./assets/icons/trash-can-24-regular.svg" alt="" /></span>Корзина</button>
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/doc-text.svg" alt="" /></span>Отчеты</button>
+          <div class="nav-separator"></div>
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/news-feed.svg" alt="" /></span>Транспортный ЭДО</button>
+        </nav>
+
+        <nav class="secondary-nav" aria-label="Служебная навигация">
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/delivery-box-iso-closed.svg" alt="" /></span>Отправитель</button>
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/stack-h-down.svg" alt="" /></span>СКБ Контур</button>
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/star.svg" alt="" /></span>Оценить сервис</button>
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/settings-gear.svg" alt="" /></span>Настройки</button>
+          <button class="nav-item t-body-s"><span class="icon"><img src="./assets/icons/money-currency-ruble-circle.svg" alt="" /></span>Тарифы и оплата</button>
+          <button class="nav-item profile t-body-s"><span class="icon"><img src="./assets/icons/user-avatar.svg" alt="" /></span>Константин К.</button>
+        </nav>
+      </aside>
+
+      <div class="legacy-navigation" hidden>
+        <button id="documentsInProgressNav" type="button" aria-expanded="false"></button>
+        <button id="invoiceAllViewNav" type="button" data-view="invoice-all"></button>
+        <button id="workingAllNav" type="button" data-view="working-all"></button>
+        <button id="requiresActionsNav" type="button" data-view="requires"></button>
+        <button id="counterpartyNav" type="button" data-view="counterparty"></button>
+        <button id="draftsNav" type="button" data-view="drafts"></button>
+        <button id="archiveNav" type="button" aria-expanded="false"></button>
+        <button id="archiveAllNav" type="button" data-view="archive-all"></button>
+        <button id="archiveCompletedNav" type="button" data-view="archive-completed"></button>
+        <button id="archiveRejectedNav" type="button" data-view="archive-rejected"></button>
+        <button id="archiveTrashNav" type="button" data-view="archive-trash"></button>
+      </div>
+
+      <main class="content">
+        <header class="page-header"><h1 id="pageTitle" class="t-heading-3xl t-reset">Накладные</h1></header>
+
+        <section class="workspace">
+          <div class="tabs document-type-tabs" role="tablist" aria-label="Тип документа" hidden>
+            <button role="tab" data-tab="Поручения" class="t-body-m">Поручения</button>
+            <button role="tab" data-tab="Заявки" aria-selected="false" class="t-body-m">Заказы-заявки</button>
+            <button id="receiptsTab" role="tab" data-tab="Расписки" aria-selected="false" class="t-body-m" hidden>Расписки</button>
+            <button role="tab" data-tab="Накладные" aria-selected="true" class="selected t-body-m">Накладные</button>
+          </div>
+
+          <div class="status-tabs" aria-label="Статусы документов">
+            <div id="invoicePartyChips" class="invoice-party-chips party-tabs" role="tablist" aria-label="Местонахождение накладной">
+              <button type="button" role="tab" class="invoice-party-chip selected" data-invoice-chip="all" aria-selected="true">Все</button>
+              <button type="button" role="tab" class="invoice-party-chip" data-invoice-chip="shipper" aria-selected="false">У грузоотправителя <span class="chip-counter">2</span></button>
+              <button type="button" role="tab" class="invoice-party-chip" data-invoice-chip="carrier" aria-selected="false">У перевозчика</button>
+              <button type="button" role="tab" class="invoice-party-chip" data-invoice-chip="consignee" aria-selected="false">У грузополучателя</button>
+              <button type="button" role="tab" class="invoice-party-chip" data-invoice-chip="rejected" aria-selected="false">Отказанные <span class="chip-counter">1</span></button>
+              <button type="button" role="tab" class="invoice-status-tab t-body-m" data-status-view="drafts" aria-selected="false">Черновики</button>
+            </div>
+
+            <div id="applicationPartyChips" class="invoice-party-chips party-tabs" role="tablist" aria-label="Местонахождение заказа-заявки" hidden>
+              <button type="button" role="tab" class="invoice-party-chip selected" data-application-chip="all" aria-selected="true">Все <span class="chip-counter">3</span></button>
+              <button type="button" role="tab" class="invoice-party-chip" data-application-chip="shipper" aria-selected="false">У грузоотправителя <span class="chip-counter">2</span></button>
+              <button type="button" role="tab" class="invoice-party-chip" data-application-chip="carrier" aria-selected="false">У перевозчика</button>
+              <button type="button" role="tab" class="invoice-party-chip" data-application-chip="rejected" aria-selected="false">Отказанные <span class="chip-counter">1</span></button>
+              <button type="button" role="tab" class="application-status-tab t-body-m" data-status-view="drafts" aria-selected="false">Черновики</button>
+            </div>
+
+            <div id="assignmentPartyChips" class="invoice-party-chips party-tabs" role="tablist" aria-label="Местонахождение поручения" hidden>
+              <button type="button" role="tab" class="invoice-party-chip selected" data-assignment-chip="all" aria-selected="true">Все</button>
+              <button type="button" role="tab" class="invoice-party-chip" data-assignment-chip="shipper" aria-selected="false">У грузоотправителя</button>
+              <button type="button" role="tab" class="invoice-party-chip" data-assignment-chip="forwarder" aria-selected="false">У экспедитора</button>
+              <button type="button" role="tab" class="assignment-status-tab t-body-m" data-status-view="drafts" aria-selected="false">Черновики</button>
+            </div>
+          </div>
+
+          <div class="toolbar applications-mode">
+            <div class="search-field">
+              <span class="search-icon"><img src="./assets/icons/asset-13.svg" alt="" /></span>
+              <input id="search" class="t-body-s" type="search" aria-label="Поиск по заявкам" placeholder="Поиск по номеру заявки" />
+              <button id="searchClear" class="search-clear" type="button" aria-label="Очистить поиск" hidden><img src="./assets/icons/x.svg" alt="" /></button>
+            </div>
+            <div class="status-select top-status-control">
+              <input id="invoiceStatusFilter" type="hidden" value="" />
+              <button id="invoiceStatusTrigger" class="status-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="invoiceStatusDropdown">
+                <span id="invoiceStatusLabel">Все статусы</span>
+                <img src="./assets/icons/arrow-c-down.svg" alt="" />
+              </button>
+              <div id="invoiceStatusDropdown" class="status-dropdown" role="listbox" aria-label="Статус накладной" hidden>
+                <button type="button" role="option" data-value="" aria-selected="true">Все статусы</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="requires" data-value="waiting" aria-selected="false" hidden>Ожидает подписи отправителя</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="requires" data-value="error" aria-selected="false" hidden>Ошибка подписи</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="counterparty" data-value="carrier-signature" aria-selected="false" hidden>Ожидает подпись перевозчика</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="archive" data-archive-views="archive-trash" data-value="draft" aria-selected="false" hidden>Черновик</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="archive" data-archive-views="archive-trash" data-value="waiting" aria-selected="false" hidden>Ожидает подписи отправителя</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="archive" data-archive-views="archive-trash" data-value="error" aria-selected="false" hidden>Ошибка подписи</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="archive" data-archive-views="archive-trash" data-value="carrier-signature" aria-selected="false" hidden>Ожидает подпись перевозчика</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="archive" data-archive-views="archive-all,archive-trash" data-value="completed" aria-selected="false" hidden>Согласовано перевозчиком</button>
+                <button type="button" role="option" data-document-tab="applications" data-status-view="archive" data-archive-views="archive-all,archive-trash" data-value="rejected" aria-selected="false" hidden>Отказ перевозчика</button>
+                <button type="button" role="option" data-status-view="requires" data-value="signature" aria-selected="false">Ожидает подписи отправителя</button>
+                <button type="button" role="option" data-status-view="requires" data-value="transport-cost" aria-selected="false">Стоимость перевозки</button>
+                <button type="button" role="option" data-status-view="requires" data-value="error" aria-selected="false">Ошибка подписи</button>
+                <button type="button" role="option" data-status-view="counterparty" data-value="loading" aria-selected="false" hidden>Погрузка</button>
+                <button type="button" role="option" data-status-view="counterparty" data-value="route" aria-selected="false" hidden>В пути</button>
+                <button type="button" role="option" data-status-view="counterparty" data-value="unloading" aria-selected="false" hidden>Разгрузка</button>
+                <button type="button" role="option" data-status-view="counterparty" data-value="forwarding" aria-selected="false" hidden>Переадресовка</button>
+                <button type="button" role="option" data-status-view="counterparty" data-value="replacement" aria-selected="false" hidden>Замена водителя или ТС</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-trash" data-value="draft" aria-selected="false" hidden>Черновик</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-trash" data-value="signature" aria-selected="false" hidden>Ожидает подписи отправителя</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-trash" data-value="loading" aria-selected="false" hidden>Погрузка</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-trash" data-value="route" aria-selected="false" hidden>В пути</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-trash" data-value="unloading" aria-selected="false" hidden>Разгрузка</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-trash" data-value="forwarding" aria-selected="false" hidden>Переадресовка</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-trash" data-value="replacement" aria-selected="false" hidden>Замена водителя или ТС</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-all,archive-completed,archive-trash" data-value="delivery" aria-selected="false" hidden>Сдача груза</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-all,archive-rejected,archive-trash" data-value="carrier-rejection" aria-selected="false" hidden>Отказ перевозчика</button>
+                <button type="button" role="option" data-status-view="archive" data-archive-views="archive-all,archive-completed,archive-rejected,archive-trash" data-value="transport-cost" aria-selected="false" hidden>Стоимость перевозки</button>
+              </div>
+            </div>
+            <select id="assignmentTopStatusFilter" class="filter-control status-control" aria-label="Статус поручения">
+              <option value="">Все статусы</option>
+            </select>
+            <button id="filterButton" class="filter-button t-body-s" type="button" aria-expanded="false" aria-controls="filterPanel"><span class="filter-icon"><img src="./assets/icons/list-09.svg" alt="" /></span>Фильтры</button>
+          </div>
+
+          <div id="filterPanel" class="filter-panel applications-mode" hidden>
+            <div id="applicationFilterRow" class="filter-row application-filter-row">
+              <select id="applicationCarrierFilter" class="filter-control"><option value="">Перевозчик</option></select>
+              <select id="applicationSupplyPointFilter" class="filter-control"><option value="">Пункт подачи ТС</option></select>
+            </div>
+            <div id="assignmentFilterFields" class="assignment-filter-fields" hidden>
+              <div class="filter-row assignment-filter-organizations">
+                <select id="assignmentForwarderFilter" class="filter-control"><option value="">Экспедитор</option></select>
+                <select id="assignmentShipperFilter" class="filter-control"><option value="">Грузоотправитель</option></select>
+              </div>
+              <div class="filter-row assignment-filter-details">
+                <input id="assignmentLoadingAddressFilter" class="filter-control" type="text" placeholder="Адрес погрузки" />
+                <div class="filter-date-range assignment-date-range">
+                  <input id="assignmentDateFromFilter" class="filter-control date-control" type="date" aria-label="Дата поручения с" />
+                  <span>—</span>
+                  <input id="assignmentDateToFilter" class="filter-control date-control" type="date" aria-label="Дата поручения по" />
+                </div>
+                <select id="assignmentStatusFilter" class="filter-control status-control" hidden aria-hidden="true"><option value="">Статус</option></select>
+                <div class="filter-actions">
+                  <button id="applyAssignmentFilters" class="filter-apply" type="button">Найти</button>
+                  <button id="resetAssignmentFilters" class="filter-reset" type="button">Сбросить</button>
+                </div>
+              </div>
+            </div>
+            <div class="filter-row invoice-filter-row" hidden>
+              <select id="senderFilter" class="filter-control"><option value="">Отправитель</option></select>
+              <select id="recipientFilter" class="filter-control"><option value="">Получатель</option></select>
+            </div>
+            <div class="filter-row invoice-filter-row" hidden>
+              <select id="customerFilter" class="filter-control"><option value="">Заказчик</option></select>
+              <select id="carrierFilter" class="filter-control"><option value="">Перевозчик</option></select>
+            </div>
+            <div class="filter-row invoice-filter-row" hidden>
+              <input id="loadingAddressFilter" class="filter-control" type="text" placeholder="Адрес погрузки" />
+              <input id="unloadingAddressFilter" class="filter-control" type="text" placeholder="Адрес выгрузки" />
+            </div>
+            <div id="standardFilterBottom" class="filter-row filter-row-bottom">
+              <div class="filter-date-range">
+                <input id="dateFromFilter" class="filter-control date-control" type="date" aria-label="Дата с" />
+                <span>—</span>
+                <input id="dateToFilter" class="filter-control date-control" type="date" aria-label="Дата по" />
+              </div>
+              <select id="statusFilter" class="filter-control status-control invoice-status-org">
+                <option value="">Статус организации</option>
+                <option value="observer-signer">Наблюдатель и подписант</option>
+                <option value="observer">Только наблюдатель</option>
+                <option value="signer">Только подписант</option>
+              </select>
+              <div class="filter-actions">
+                <button id="applyFilters" class="filter-apply" type="button">Найти</button>
+                <button id="resetFilters" class="filter-reset" type="button">Сбросить</button>
+              </div>
+            </div>
+          </div>
+
+          <section id="receiptsView" class="receipts-view" aria-label="Экспедиторские расписки" hidden>
+            <div class="receipts-table">
+              <div class="receipts-head receipts-grid t-body-m" role="row">
+                <span role="columnheader">Расписка</span>
+                <span class="receipt-forwarder-head" role="columnheader">Экспедитор, поручение <img src="./assets/icons/info-circle.svg" alt="" /></span>
+                <span role="columnheader">Адрес и дата получения груза</span>
+                <span class="receipt-cargo-head" role="columnheader">Груз</span>
+              </div>
+
+              <article class="receipt-row receipts-grid t-body-m">
+                <div><strong>0000676534</strong><span class="receipt-muted">от 25.07</span><span class="receipt-status">Завершено</span></div>
+                <div><strong>ООО «Логистика-Перевозчик»</strong><a class="forwarding-order" href="#" aria-label="Открыть поручение ПЭ-482759-21">ПЭ-482759-21 от 12.04 <img src="./assets/icons/arrow-ui-corner-out-up-right.svg" alt="" /></a></div>
+                <div><strong>Санкт-Петербург, ул. Савушкина, д. 126, лит. Б, пом. 62-Н</strong><span class="receipt-muted">12.07.2026 в 12:00</span></div>
+                <div class="receipt-cargo"><strong>1 партия</strong><span class="receipt-muted">9 015 350,00 кг</span></div>
+              </article>
+
+              <article class="receipt-row receipts-grid t-body-m">
+                <div><strong>0000676534</strong><span class="receipt-muted">от 20.07</span><span class="receipt-status">Завершено</span></div>
+                <div><strong>ООО «ТрансЛогистик Экспресс — Международные перевозки и логистические решения»</strong></div>
+                <div><strong>Новосибирская область, Ордынский район, с. Красный Яр, ул. Центральная, д. 34, кв. 7</strong><span class="receipt-muted">12.07.2026 в 12:00</span></div>
+                <div class="receipt-cargo"><strong>2 партии</strong><span class="receipt-muted">14 800,00 кг<br />1 100,00 кг</span></div>
+              </article>
+
+              <article class="receipt-row receipts-grid t-body-m">
+                <div><strong>0000676534</strong><span class="receipt-muted">от 19.07</span><span class="receipt-status">Завершено</span></div>
+                <div><strong>ООО «Северный Грузовой Альянс — Комплексные транспортные услуги по России и СНГ»</strong><span class="forwarding-order">ПЭ-174839-56 от 08.06</span></div>
+                <div><strong>Свердловская область, Ирбитский муниципальный район, п. Лесной, ул. Молодёжная, д. 8, пом. 2</strong><span class="receipt-muted">11.07.2026</span></div>
+                <div class="receipt-cargo"><strong>2 партии</strong><span class="receipt-muted">13 200,00 кг<br />1 500,00 кг</span></div>
+              </article>
+
+              <article class="receipt-row receipts-grid t-body-m">
+                <div><strong>0000676534</strong><span class="receipt-muted">от 15.07</span><span class="receipt-status">Завершено</span></div>
+                <div><strong>ООО «ВостокТранс Сервис»</strong><a class="forwarding-order" href="#" aria-label="Открыть поручение ПЭ-920374-33">ПЭ-920374-33 от 22.07 <img src="./assets/icons/arrow-ui-corner-out-up-right.svg" alt="" /></a></div>
+                <div><strong>Республика Татарстан, Высокогорский район, д. Новое Шигалеево, ул. Школьная, д. 15, оф. 3</strong><span class="receipt-muted">11.07.2026 в 00:09</span></div>
+                <div class="receipt-cargo"><strong>2 партии</strong><span class="receipt-muted">16 450,00 кг<br />1 300,00 кг</span></div>
+              </article>
+
+              <article class="receipt-row receipts-grid t-body-m">
+                <div><strong>0000676534</strong><span class="receipt-muted">от 10.07</span><span class="receipt-status">Завершено</span></div>
+                <div><strong>ООО «Магистраль Логистик — Надежные грузоперевозки по федеральным трассам»</strong><a class="forwarding-order" href="#" aria-label="Открыть поручение ПЭ-658291-19">ПЭ-658291-19 от 30.08 <img src="./assets/icons/arrow-ui-corner-out-up-right.svg" alt="" /></a></div>
+                <div><strong>Ростовская область, Азовский район, х. Зеленый, ул. Советская, д. 18, кв. 12</strong><span class="receipt-muted">02.06.2026 в 12:00</span></div>
+                <div class="receipt-cargo"><strong>2 партии</strong><span class="receipt-muted">14 000,00 кг<br />1 400,00 кг</span></div>
+              </article>
+            </div>
+
+            <nav class="receipts-pagination" aria-label="Страницы расписок" hidden></nav>
+          </section>
+
+          <section id="assignmentsView" class="assignments-view" aria-label="Поручения, требующие действий" hidden>
+            <div class="assignment-table">
+              <div class="assignment-head assignment-grid t-body-m" role="row">
+                <label class="header-check"><input id="assignmentSelectAll" type="checkbox" /><span class="visually-hidden">Выбрать все поручения</span></label>
+                <span role="columnheader">Поручение</span>
+                <span role="columnheader">Заказчик</span>
+                <span role="columnheader">Маршрут</span>
+              </div>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-signature" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-020</strong><span class="muted">от 17.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 4 августа 20:57 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>ООО «Север-Логистик»</strong></div>
+                <div><strong>Санкт-Петербург, ул. Савушкина, д. 126, лит. Б, пом. 62-Н — Санкт-Петербург, ул. Жака Дюкло, д. 66</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-signature" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-184</strong><span class="muted">от 18.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 4 августа 18:42 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>АО «Балтика-Транс»</strong></div>
+                <div><strong>Мурманск, Портовый проезд, д. 19 — Петрозаводск, Шуйское шоссе, д. 12</strong><span class="muted">Еще 3 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-error" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-731</strong><span class="muted">от 18.07</span><div class="progress second assignment-progress" aria-label="Ошибка подписи"><button class="error-step" type="button" data-tooltip="Ошибка подписания 4 августа 20:57 (UTC +03:00)"></button><i></i></div></div>
+                <div><strong>ООО «УралСтройСнаб»</strong></div>
+                <div><strong>Екатеринбург, Сибирский тракт, д. 12 — Казань, ул. Техническая, д. 52, корп. 3</strong></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-signature" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-052</strong><span class="muted">от 19.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 5 августа 09:15 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>ООО «МедТехЛаб»</strong></div>
+                <div><strong>Москва, Каширское шоссе, д. 24 — Новосибирск, ул. Немировича-Данченко, д. 128</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-signature" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-306</strong><span class="muted">от 20.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 5 августа 10:06 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>АО «Сады Придонья»</strong></div>
+                <div><strong>Волгоград, ул. Промышленная, д. 8 — Екатеринбург, Елизаветинское шоссе, д. 42</strong><span class="muted">Еще 5 маршрутов</span></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-error" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-917</strong><span class="muted">от 21.07</span><div class="progress second assignment-progress" aria-label="Ошибка подписи"><button class="error-step" type="button" data-tooltip="Ошибка подписания 5 августа 11:24 (UTC +03:00)"></button><i></i></div></div>
+                <div><strong>ООО «Инжиниринг Сервис»</strong></div>
+                <div><strong>Ростов-на-Дону, ул. Доватора, д. 148 — Аксай, Индустриальная ул., д. 7</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-signature" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-128</strong><span class="muted">от 22.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 5 августа 13:31 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>ООО «Волга Карго»</strong></div>
+                <div><strong>Самара, Заводское шоссе, д. 17 — Ульяновск, Московское шоссе, д. 64</strong></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-signature" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-317</strong><span class="muted">от 23.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 5 августа 15:08 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>АО «Невский Транзит»</strong></div>
+                <div><strong>Санкт-Петербург, Предпортовая ул., д. 8 — Псков, Индустриальная ул., д. 9</strong><span class="muted">Еще 4 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-error" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-244</strong><span class="muted">от 24.07</span><div class="progress second assignment-progress" aria-label="Ошибка подписи"><button class="error-step" type="button" data-tooltip="Ошибка подписания 5 августа 16:47 (UTC +03:00)"></button><i></i></div></div>
+                <div><strong>АО «Северная Магистраль»</strong></div>
+                <div><strong>Архангельск, Окружное шоссе, д. 11 — Вологда, Ленинградская ул., д. 71</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row assignment-grid t-body-m" data-status="assignment-signature" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-389</strong><span class="muted">от 25.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 6 августа 09:02 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>ООО «АгроФлот»</strong></div>
+                <div><strong>Краснодар, ул. Тополиная Аллея, д. 2/1 — Сочи, Транспортная ул., д. 28</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+            </div>
+            <div id="assignmentsNoResults" class="empty-state" hidden>
+              <div class="empty-state-content"><img src="./assets/icons/docs.svg" alt="" /><strong class="t-body-m">Поручения не найдены</strong></div>
+            </div>
+          </section>
+
+          <section id="counterpartyAssignmentsView" class="assignments-view" aria-label="Поручения у контрагента" hidden>
+            <div class="assignment-table">
+              <div class="assignment-head assignment-grid t-body-m" role="row">
+                <label class="header-check"><input id="counterpartyAssignmentSelectAll" type="checkbox" /><span class="visually-hidden">Выбрать все поручения у контрагента</span></label>
+                <span role="columnheader">Поручение</span>
+                <span role="columnheader">Заказчик</span>
+                <span role="columnheader">Маршрут</span>
+              </div>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-461</strong><span class="muted">от 26.07</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 31 июля 10:26 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>ООО «Логистика Северо-Запад»</strong></div>
+                <div><strong>Санкт-Петербург, Кубинская ул., д. 75 — Великий Новгород, Нехинская ул., д. 61</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-573</strong><span class="muted">от 27.07</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 31 июля 12:14 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>АО «Поволжский Терминал»</strong></div>
+                <div><strong>Казань, ул. Аделя Кутуя, д. 151 — Нижний Новгород, Московское шоссе, д. 302</strong></div>
+              </article>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-608</strong><span class="muted">от 28.07</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 1 августа 09:08 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>ООО «Сибирский Транспортный Союз»</strong></div>
+                <div><strong>Новосибирск, Толмачёвская ул., д. 43 — Кемерово, Кузнецкий проспект, д. 137</strong><span class="muted">Еще 4 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-842</strong><span class="muted">от 29.07</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 1 августа 11:37 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>АО «Донская Логистическая Компания»</strong></div>
+                <div><strong>Ростов-на-Дону, ул. Малиновского, д. 33 — Краснодар, Уральская ул., д. 126</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-095</strong><span class="muted">от 30.07</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 2 августа 14:05 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>ООО «Арктик Груз»</strong></div>
+                <div><strong>Мурманск, Промышленная ул., д. 36 — Архангельск, Окружное шоссе, д. 11</strong><span class="muted">Еще 3 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-266</strong><span class="muted">от 31.07</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 3 августа 10:49 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>ООО «УралКарго Групп»</strong></div>
+                <div><strong>Екатеринбург, ул. Монтажников, д. 4 — Челябинск, Троицкий тракт, д. 74</strong></div>
+              </article>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-754</strong><span class="muted">от 01.08</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 4 августа 13:18 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>АО «Центральная Экспедиция»</strong></div>
+                <div><strong>Москва, Рябиновая ул., д. 45 — Тула, Новомосковское шоссе, д. 54</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row counterparty-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-936</strong><span class="muted">от 02.08</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 5 августа 16:02 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>ООО «ВостокТранс Сервис»</strong></div>
+                <div><strong>Хабаровск, Промышленная ул., д. 20 — Владивосток, Снеговая ул., д. 18</strong><span class="muted">Еще 5 маршрутов</span></div>
+              </article>
+            </div>
+            <div id="counterpartyAssignmentsNoResults" class="empty-state" hidden>
+              <div class="empty-state-content"><img src="./assets/icons/docs.svg" alt="" /><strong class="t-body-m">Поручения не найдены</strong></div>
+            </div>
+          </section>
+
+          <section id="draftAssignmentsView" class="assignments-view" aria-label="Черновики поручений" hidden>
+            <div class="assignment-table">
+              <div class="assignment-head assignment-grid t-body-m" role="row">
+                <label class="header-check"><input id="draftAssignmentSelectAll" type="checkbox" /><span class="visually-hidden">Выбрать все черновики поручений</span></label>
+                <span role="columnheader">Поручение</span>
+                <span role="columnheader">Заказчик</span>
+                <span role="columnheader">Маршрут</span>
+              </div>
+
+              <article class="table-row assignment-row draft-assignment-row assignment-grid t-body-m" data-status="assignment-draft" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-014</strong><span class="muted">от 17.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «Север-Логистик»</strong></div>
+                <div><strong>Санкт-Петербург, ул. Савушкина, д. 126 — Санкт-Петербург, ул. Жака Дюкло, д. 66</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row draft-assignment-row assignment-grid t-body-m" data-status="assignment-draft" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-086</strong><span class="muted">от 18.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>АО «Урал Пром Транс»</strong></div>
+                <div><strong>Екатеринбург, Сибирский тракт, д. 12 — Челябинск, Троицкий тракт, д. 74</strong><span class="muted">Еще 4 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row draft-assignment-row assignment-grid t-body-m" data-status="assignment-draft" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-177</strong><span class="muted">от 19.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «Волга Карго»</strong></div>
+                <div><strong>Казань, ул. Аделя Кутуя, д. 151 — Самара, Заводское шоссе, д. 17</strong></div>
+              </article>
+
+              <article class="table-row assignment-row draft-assignment-row assignment-grid t-body-m" data-status="assignment-draft" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-328</strong><span class="muted">от 20.07</span><span class="draft-label">Черновик</span></div>
+                <div></div>
+                <div><strong>Москва, Рябиновая ул., д. 45 — Тула, Новомосковское шоссе, д. 54</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row draft-assignment-row assignment-grid t-body-m" data-status="assignment-draft" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-509</strong><span class="muted">от 21.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>АО «Сибирская экспедиция»</strong></div>
+                <div></div>
+              </article>
+
+              <article class="table-row assignment-row draft-assignment-row assignment-grid t-body-m" data-status="assignment-draft" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-692</strong><span class="muted">от 22.07</span><span class="draft-label">Черновик</span></div>
+                <div></div>
+                <div></div>
+              </article>
+            </div>
+            <div id="draftAssignmentsNoResults" class="empty-state" hidden>
+              <div class="empty-state-content"><img src="./assets/icons/docs.svg" alt="" /><strong class="t-body-m">Поручения не найдены</strong></div>
+            </div>
+          </section>
+
+          <section id="archiveAssignmentsView" class="assignments-view" aria-label="Архивные поручения" hidden>
+            <div class="assignment-table">
+              <div class="assignment-head assignment-grid t-body-m" role="row">
+                <label class="header-check"><input id="archiveAssignmentSelectAll" type="checkbox" /><span class="visually-hidden">Выбрать все архивные поручения</span></label>
+                <span role="columnheader">Поручение</span>
+                <span role="columnheader">Заказчик</span>
+                <span role="columnheader">Маршрут</span>
+              </div>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-signature" data-archive-section="all" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-902</strong><span class="muted">от 14.07</span><div class="progress second assignment-progress" aria-label="Ожидает подписи отправителя"><button class="striped" type="button" data-tooltip="Поручение передано на подпись 5 августа 09:42 (UTC +03:00) Ожидает подпись отправителя"></button><i></i></div></div>
+                <div><strong>ООО «Балтийский экспедиционный центр»</strong></div>
+                <div><strong>Санкт-Петербург, Софийская ул., д. 96 — Петрозаводск, Заводская ул., д. 18</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="completed" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-143</strong><span class="muted">от 16.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 4 августа 20:21 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 4 августа 20:57 (UTC +03:00)"></button></div></div>
+                <div><strong>ООО «Северный грузовой терминал»</strong></div>
+                <div><strong>Санкт-Петербург, Московское шоссе, д. 13 — Псков, Инженерная ул., д. 9</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="completed" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-257</strong><span class="muted">от 17.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 3 августа 16:34 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 3 августа 17:02 (UTC +03:00)"></button></div></div>
+                <div><strong>АО «Поволжье Логистик»</strong></div>
+                <div><strong>Казань, Тэцевская ул., д. 5 — Самара, Заводское шоссе, д. 17</strong></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="completed" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-364</strong><span class="muted">от 18.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 2 августа 11:08 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 2 августа 11:46 (UTC +03:00)"></button></div></div>
+                <div><strong>ООО «УралТрансКомплект»</strong></div>
+                <div><strong>Екатеринбург, ул. Монтажников, д. 4 — Тюмень, ул. Республики, д. 252</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-carrier" data-archive-section="all" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-947</strong><span class="muted">от 18.07</span><div class="progress second assignment-progress" aria-label="Требует подписи экспедитора"><button class="solid-step counterparty-step" type="button" data-tooltip="Поручение подписано грузоотправителем 4 августа 16:28 (UTC +03:00) Требует подписи экспедитора"></button><i></i></div></div>
+                <div><strong>АО «Центральный транспортный оператор»</strong></div>
+                <div><strong>Москва, Рябиновая ул., д. 45 — Рязань, Восточная окружная дорога, д. 10</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="completed" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-482</strong><span class="muted">от 19.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 1 августа 14:18 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 1 августа 15:03 (UTC +03:00)"></button></div></div>
+                <div><strong>АО «Донская экспедиция»</strong></div>
+                <div><strong>Ростов-на-Дону, ул. Доватора, д. 148 — Краснодар, Уральская ул., д. 126</strong><span class="muted">Еще 3 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="completed" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-596</strong><span class="muted">от 20.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 31 июля 12:40 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 31 июля 13:19 (UTC +03:00)"></button></div></div>
+                <div><strong>ООО «Сибирь Карго»</strong></div>
+                <div><strong>Новосибирск, Толмачёвская ул., д. 43 — Томск, ул. Мичурина, д. 110</strong></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="completed" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-618</strong><span class="muted">от 21.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 30 июля 18:05 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 30 июля 18:44 (UTC +03:00)"></button></div></div>
+                <div><strong>АО «Беломорский транспорт»</strong></div>
+                <div><strong>Архангельск, Окружное шоссе, д. 11 — Вологда, Ленинградская ул., д. 71</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="completed" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-725</strong><span class="muted">от 22.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 29 июля 09:22 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 29 июля 10:01 (UTC +03:00)"></button></div></div>
+                <div><strong>ООО «Восточный маршрут»</strong></div>
+                <div><strong>Хабаровск, Промышленная ул., д. 20 — Владивосток, Снеговая ул., д. 18</strong><span class="muted">Еще 4 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-completed" data-archive-section="trash" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-011</strong><span class="muted">от 23.07</span><div class="progress second assignment-progress" aria-label="Завершено"><button class="solid-step" type="button" data-tooltip="Поручение подписано грузоотправителем 28 июля 15:17 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Поручение подписано экспедитором 28 июля 15:55 (UTC +03:00)"></button></div></div>
+                <div><strong>ООО «Столичная логистика»</strong></div>
+                <div><strong>Москва, Рябиновая ул., д. 45 — Тула, Новомосковское шоссе, д. 54</strong></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-draft" data-archive-section="trash" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-073</strong><span class="muted">от 24.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>АО «Невский транзит»</strong></div>
+                <div><strong>Санкт-Петербург, Предпортовая ул., д. 8 — Великий Новгород, Нехинская ул., д. 61</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-draft" data-archive-section="trash" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-159</strong><span class="muted">от 25.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «Каспий Экспресс»</strong></div>
+                <div><strong>Астрахань, Рыбинская ул., д. 12 — Волгоград, ул. Промышленная, д. 8</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-error" data-archive-section="trash" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-293</strong><span class="muted">от 26.07</span><div class="progress second assignment-progress" aria-label="Ошибка подписи"><button class="error-step" type="button" data-tooltip="Ошибка подписания 29 июля 09:14 (UTC +03:00)"></button><i></i></div></div>
+                <div><strong>АО «Балтийская экспедиция»</strong></div>
+                <div><strong>Калининград, Правая набережная, д. 21 — Смоленск, Индустриальная ул., д. 9</strong></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-draft" data-archive-section="trash" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-438</strong><span class="muted">от 27.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «Южный грузовой центр»</strong></div>
+                <div><strong>Ставрополь, Старомарьевское шоссе, д. 13 — Нальчик, Кабардинская ул., д. 158</strong><span class="muted">Еще 1 маршрут</span></div>
+              </article>
+
+              <article class="table-row assignment-row archive-assignment-row assignment-grid t-body-m" data-status="assignment-draft" data-archive-section="trash" tabindex="0">
+                <div class="invoice-cell"><strong>PE/201704-886</strong><span class="muted">от 30.07</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «Дальний Восток Транс»</strong></div>
+                <div><strong>Владивосток, Снеговая ул., д. 18 — Хабаровск, Промышленная ул., д. 20</strong><span class="muted">Еще 2 маршрута</span></div>
+              </article>
+            </div>
+            <div id="archiveAssignmentsNoResults" class="empty-state" hidden>
+              <div class="empty-state-content"><img src="./assets/icons/docs.svg" alt="" /><strong class="t-body-m">Поручения не найдены</strong></div>
+            </div>
+          </section>
+
+          <div class="table-wrap">
+            <div id="invoiceTableHead" class="table-head table-grid t-body-s" hidden>
+              <label class="header-check"><input id="selectAll" type="checkbox" /><span class="visually-hidden">Выбрать все накладные</span></label>
+              <span>Накладная</span>
+              <span>Отправитель</span>
+              <span>Получатель</span>
+              <span>Груз</span>
+            </div>
+            <div id="rows" hidden>
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-020 рольф эстейт санкт-петербург +74313666312 км069о хендэ мотор снг россия удмуртская республика ижевск печатников сосновое поселение кочкина логистическая диваны 370 18" data-status="signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-020</strong>
+                  <span class="muted">от 27.06</span>
+                  <span class="invoice-row-status"><span>Т1</span>Требует подписи грузоотправителя</span>
+                  <div class="progress" aria-label="Тип 1: требует подписи грузоотправителя"><button class="striped" type="button" aria-describedby="progress-tooltip"><span class="progress-tooltip t-body-s" id="progress-tooltip" role="tooltip">Накладная передана на подпись 4 августа 20:57 (UTC&nbsp;+03:00)<img src="./assets/icons/tooltip-pointer.svg" alt="" /></span></button><i></i><i></i><i></i></div>
+                </div>
+                <div><strong>ООО”РОЛЬФ Эстейт Санкт-<br />Петербург»</strong><span class="muted">+74313666312<br />КМ069О</span></div>
+                <div><strong>ООО «Хендэ Мотор СНГ»</strong><span class="muted address">Россия, 385200, Адыгея Республика,<br />Теучежский муниципальный район,<br />Пчегатлукайское сельское поселение,<br />хутор Кочкин, ул. Логистическая, дом<br />4, строение 1</span></div>
+                <div class="cargo"><strong>Диваны</strong><span>370 кг</span><span class="muted">18 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-184 балтика-транс +78124091872 а427мр198 северный терминал мурманск холодильное оборудование 1240 6" data-status="transport-cost" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-184</strong>
+                  <span class="muted">от 02.07</span>
+                  <span class="invoice-row-status"><span>Т5</span>Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Тип 2: стоимость перевозки"><button class="solid-step" type="button" aria-describedby="progress-tooltip-4"><span class="progress-tooltip t-body-s" id="progress-tooltip-4" role="tooltip">Титул стоимости подписан перевозчиком 4 августа 20:18 (UTC&nbsp;+03:00)<img src="./assets/icons/tooltip-pointer.svg" alt="" /></span></button><i></i></div>
+                </div>
+                <div><strong>ООО «Балтика-Транс»</strong><span class="muted">+7 812 409-18-72<br />А427МР198</span></div>
+                <div><strong>АО «Северный терминал»</strong><span class="muted address">Россия, 183038, Мурманская область,<br />г. Мурманск, Портовый проезд,<br />дом 19, склад 4</span></div>
+                <div class="cargo"><strong>Холодильное оборудование</strong><span>1 240 кг</span><span class="muted">6 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-731 уралстройснаб +73432284015 р816кх196 монолит-регион казань сэндвич-панели 8650 42" data-status="error" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-731</strong>
+                  <span class="muted">от 04.07</span>
+                  <span class="invoice-row-status"><span>Т1</span>Ошибка подписи грузоотправителя</span>
+                  <div class="progress" aria-label="Тип 1: ошибка подписи грузоотправителя"><button class="error-step" type="button" aria-describedby="progress-tooltip-2"><span class="progress-tooltip t-body-s" id="progress-tooltip-2" role="tooltip">Ошибка подписания 4 августа 20:57 (UTC&nbsp;+03:00)<img src="./assets/icons/tooltip-pointer.svg" alt="" /></span></button><i></i><i></i><i></i></div>
+                </div>
+                <div><strong>АО «УралСтройСнаб»</strong><span class="muted">+7 343 228-40-15<br />Р816КХ196</span></div>
+                <div><strong>ООО «Монолит-Регион»</strong><span class="muted address">Россия, 420054, Республика Татарстан,<br />г. Казань, ул. Техническая,<br />дом 52, корпус 3</span></div>
+                <div class="cargo"><strong>Сэндвич-панели</strong><span>8 650 кг</span><span class="muted">42 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-052 медтехлаб +74951186204 н305ту799 клинический диагностический центр новосибирск автоматическая лабораторная линия 2780 12" data-status="transport-cost" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-052</strong>
+                  <span class="muted">от 05.07</span>
+                  <span class="invoice-row-status"><span>Т5</span>Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Тип 2: стоимость перевозки"><button class="solid-step" type="button" aria-describedby="progress-tooltip-5"><span class="progress-tooltip t-body-s" id="progress-tooltip-5" role="tooltip">Титул стоимости подписан перевозчиком 4 августа 20:18 (UTC&nbsp;+03:00)<img src="./assets/icons/tooltip-pointer.svg" alt="" /></span></button><i></i></div>
+                </div>
+                <div><strong>ООО «МедТехЛаб»</strong><span class="muted">+7 495 118-62-04<br />Н305ТУ799</span></div>
+                <div><strong>ГБУЗ «Клинический диагностический центр»</strong><span class="muted address">Россия, 630087, Новосибирская область,<br />г. Новосибирск, ул. Немировича-Данченко,<br />дом 128</span></div>
+                <div class="cargo"><strong>Автоматическая лабораторная линия с модулем подготовки биоматериала</strong><span>2 780 кг</span><span class="muted">12 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-306 сады придонья +78442553420 в742ос134 торговая сеть меридиан екатеринбург соки фруктовые пюре 4930 360" data-status="signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-306</strong>
+                  <span class="muted">от 08.07</span>
+                  <span class="invoice-row-status"><span>Т1</span>Требует подписи грузоотправителя</span>
+                  <div class="progress" aria-label="Тип 1: требует подписи грузоотправителя"><button class="striped" type="button" aria-describedby="progress-tooltip-3"><span class="progress-tooltip t-body-s" id="progress-tooltip-3" role="tooltip">Накладная передана на подпись 4 августа 20:57 (UTC&nbsp;+03:00)<img src="./assets/icons/tooltip-pointer.svg" alt="" /></span></button><i></i><i></i><i></i></div>
+                </div>
+                <div><strong>АО «Сады Придонья»</strong><span class="muted">+7 8442 55-34-20<br />В742ОС134</span></div>
+                <div><strong>ООО «Торговая сеть Меридиан»</strong><span class="muted address">Россия, 620024, Свердловская область,<br />г. Екатеринбург, Елизаветинское шоссе,<br />дом 42, распределительный центр 2</span></div>
+                <div class="cargo"><strong>Соки и фруктовые пюре</strong><span>4 930 кг</span><span class="muted">360 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-917 инжиниринг сервис +78632270196 е591ар161 логистик парк дон аксай запасные части конвейерная линия складской комплекс 980 27" data-status="signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-917</strong>
+                  <span class="muted">от 10.07</span>
+                  <span class="invoice-row-status"><span>Т1</span>Требует подписи грузоотправителя</span>
+                  <div class="progress" aria-label="Тип 1: требует подписи грузоотправителя"><button class="striped" type="button" aria-describedby="progress-tooltip-6"><span class="progress-tooltip t-body-s" id="progress-tooltip-6" role="tooltip">Накладная передана на подпись 4 августа 20:57 (UTC&nbsp;+03:00)<img src="./assets/icons/tooltip-pointer.svg" alt="" /></span></button><i></i><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «Инжиниринг Сервис»</strong><span class="muted">+7 863 227-01-96<br />Е591АР161</span></div>
+                <div><strong>АО «Логистик Парк Дон»</strong><span class="muted address">Россия, 346720, Ростовская область,<br />Аксайский район, г. Аксай,<br />Индустриальная ул., дом 7</span></div>
+                <div class="cargo"><strong>Комплект запасных частей для конвейерной линии складского комплекса</strong><span>980 кг</span><span class="muted">27 шт</span></div>
+              </article>
+            </div>
+            <div id="counterpartyRows" hidden>
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-128 волга карго +78462710018 м318кт163 канцпром самара офисная бумага 1240 80" data-status="loading" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-128</strong>
+                  <span class="muted">от 12.07</span>
+                  <span class="invoice-row-status"><span>Т2</span>Требует подписи водителя</span>
+                  <div class="progress" aria-label="Т2: требует подписи водителя"><button class="solid-step" type="button" data-tooltip="Накладная подписана грузоотправителем 31 июля 10:26 (UTC +03:00)"></button><i></i><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «Волга Карго»</strong><span class="muted">+7 846 271-00-18<br />М318КТ163</span></div>
+                <div><strong>ООО «КанцПром»</strong><span class="muted address">Россия, 443022, Самарская область,<br />г. Самара, Заводское шоссе,<br />дом 17, склад 6</span></div>
+                <div class="cargo"><strong>Офисная бумага</strong><span>1 240 кг</span><span class="muted">80 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-317 невский транзит +78126752240 к317рт198 балткомплект санкт-петербург крепежные изделия 2860 156" data-status="loading" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-317</strong>
+                  <span class="muted">от 13.07</span>
+                  <span class="invoice-row-status"><span>Т2</span>Требует подписи перевозчика</span>
+                  <div class="progress" aria-label="Т2: требует подписи перевозчика"><button class="solid-step" type="button" data-tooltip="Накладная подписана грузоотправителем 31 июля 10:26 (UTC +03:00)"></button><button class="striped" type="button" data-tooltip="Накладная подписана водителем на погрузке 4 августа 18:05 (UTC +03:00)"></button><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «Невский Транзит»</strong><span class="muted">+7 812 675-22-40<br />К317РТ198</span></div>
+                <div><strong>АО «БалтКомплект»</strong><span class="muted address">Россия, 196240, Санкт-Петербург,<br />Предпортовая улица,<br />дом 8, корпус 2</span></div>
+                <div class="cargo"><strong>Крепёжные изделия</strong><span>2 860 кг</span><span class="muted">156 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-244 северная магистраль +78126440852 т904ве178 арктик строй архангельск силовой кабель 3120 24" data-status="loading" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-244</strong>
+                  <span class="muted">от 13.07</span>
+                  <span class="invoice-row-status"><span>Т4</span>Требует подписи водителя</span>
+                  <div class="progress" aria-label="Т4: требует подписи водителя"><button class="solid-step" type="button" data-tooltip="Накладная подписана грузоотправителем 31 июля 10:26 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Накладная подписана перевозчиком на погрузке 4 августа 18:08 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Получатель принял груз полностью 4 августа 18:11 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «Северная Магистраль»</strong><span class="muted">+7 812 644-08-52<br />Т904ВЕ178</span></div>
+                <div><strong>ООО «Арктик Строй»</strong><span class="muted address">Россия, 163045, Архангельская область,<br />г. Архангельск, Окружное шоссе,<br />дом 11</span></div>
+                <div class="cargo"><strong>Силовой кабель</strong><span>3 120 кг</span><span class="muted">24 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-389 агрофлот +78612250973 к562не123 кубань фуд краснодар замороженные овощи 6750 540" data-status="route" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-389</strong>
+                  <span class="muted">от 15.07</span>
+                  <span class="invoice-row-status"><span>Т4</span>Требует подписи перевозчика</span>
+                  <div class="progress" aria-label="Т4: требует подписи перевозчика"><button class="solid-step" type="button" data-tooltip="Накладная подписана грузоотправителем 31 июля 10:26 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Накладная подписана перевозчиком на погрузке 4 августа 18:08 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Получатель принял груз полностью 4 августа 18:11 (UTC +03:00)"></button><button class="striped" type="button" data-tooltip="Накладная подписана водителем на сдаче 4 августа 18:12 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «АгроФлот»</strong><span class="muted">+7 861 225-09-73<br />К562НЕ123</span></div>
+                <div><strong>АО «Кубань Фуд»</strong><span class="muted address">Россия, 350072, Краснодарский край,<br />г. Краснодар, ул. Тополиная Аллея,<br />дом 2/1</span></div>
+                <div class="cargo"><strong>Замороженные овощи</strong><span>6 750 кг</span><span class="muted">540 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-476 профиль-металл +74872333041 с117ор71 технопарк тула оцинкованная сталь полимерное покрытие 11200 64" data-status="unloading" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-476</strong>
+                  <span class="muted">от 16.07</span>
+                  <span class="invoice-row-status"><span>Т3</span>Требует подписи грузополучателя</span>
+                  <div class="progress" aria-label="Т3: требует подписи грузополучателя"><button class="consignee-step" type="button" data-tooltip="Накладная подписана грузоотправителем 31 июля 10:26 (UTC +03:00)"></button><button class="consignee-step" type="button" data-tooltip="Накладная подписана перевозчиком на погрузке 4 августа 18:08 (UTC +03:00)"></button><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «Профиль-Металл»</strong><span class="muted">+7 4872 33-30-41<br />С117ОР71</span></div>
+                <div><strong>ООО «ТехноПарк Тула»</strong><span class="muted address">Россия, 300036, Тульская область,<br />г. Тула, Алексинское шоссе,<br />дом 34, корпус 2</span></div>
+                <div class="cargo"><strong>Листы оцинкованной стали с полимерным покрытием</strong><span>11 200 кг</span><span class="muted">64 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-605 фармлогистика +74952207741 у841мн799 аптечный склад подмосковье медицинские расходные материалы 940 215" data-status="unloading" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-605</strong>
+                  <span class="muted">от 18.07</span>
+                  <span class="invoice-row-status"><span>Т3</span>Требует подписи грузополучателя</span>
+                  <div class="progress" aria-label="Т3: требует подписи грузополучателя"><button class="consignee-step" type="button" data-tooltip="Накладная подписана грузоотправителем 31 июля 10:26 (UTC +03:00)"></button><button class="consignee-step" type="button" data-tooltip="Накладная подписана перевозчиком на погрузке 4 августа 18:08 (UTC +03:00)"></button><i></i><i></i></div>
+                </div>
+                <div><strong>АО «ФармЛогистика»</strong><span class="muted">+7 495 220-77-41<br />У841МН799</span></div>
+                <div><strong>ООО «Аптечный склад Подмосковье»</strong><span class="muted address">Россия, 142100, Московская область,<br />г. Подольск, Домодедовское шоссе,<br />дом 22</span></div>
+                <div class="cargo"><strong>Медицинские расходные материалы</strong><span>940 кг</span><span class="muted">215 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-search="tnn 202407-842 байкал экспресс +73952290266 а206рс138 восток ритейл иркутск бытовая техника 5240 48" data-status="unloading" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-842</strong>
+                  <span class="muted">от 19.07</span>
+                  <span class="invoice-row-status"><span>Т3</span>Требует подписи грузополучателя</span>
+                  <div class="progress" aria-label="Т3: требует подписи грузополучателя"><button class="consignee-step" type="button" data-tooltip="Накладная подписана грузоотправителем 31 июля 10:26 (UTC +03:00)"></button><button class="consignee-step" type="button" data-tooltip="Накладная подписана перевозчиком на погрузке 4 августа 18:08 (UTC +03:00)"></button><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «Байкал Экспресс»</strong><span class="muted">+7 3952 29-02-66<br />А206РС138</span></div>
+                <div><strong>АО «Восток Ритейл»</strong><span class="muted address">Россия, 664033, Иркутская область,<br />г. Иркутск, ул. Лермонтова,<br />дом 134</span></div>
+                <div class="cargo"><strong>Бытовая техника</strong><span>5 240 кг</span><span class="muted">48 шт</span></div>
+              </article>
+
+            </div>
+            <div id="draftRows" hidden>
+              <article class="table-row table-grid draft-row t-body-m" data-search="tn 202608-014 альфа логистик +74951234567 а214вс799 торговый дом север москва промышленная улица мебель для офиса 1840 36" tabindex="0">
+                <div class="invoice-cell"><strong>TN/202608-014</strong><span class="muted">от 05.08</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «Альфа Логистик»</strong><span class="muted">+7 495 123-45-67<br />А214ВС799</span></div>
+                <div><strong>АО «Торговый дом Север»</strong><span class="muted address">Россия, Москва,<br />Промышленная улица, дом 18</span></div>
+                <div class="cargo"><strong>Мебель для офиса</strong><span>1 840 кг</span><span class="muted">36 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid draft-row t-body-m" data-search="tn 202608-058 балтика транс +78124091872 к415ое178 невский терминал санкт-петербург софийская улица" tabindex="0">
+                <div class="invoice-cell"><strong>TN/202608-058</strong><span class="muted">от 04.08</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «Балтика-Транс»</strong><span class="muted">+7 812 409-18-72<br />К415ОЕ178</span></div>
+                <div><strong>ООО «Невский Терминал»</strong><span class="muted address">Россия, Санкт-Петербург,<br />Софийская улица, дом 96</span></div>
+                <div class="cargo"></div>
+              </article>
+
+              <article class="table-row table-grid draft-row t-body-m" data-search="tn 202608-103 клинический диагностический центр новосибирск лабораторное оборудование 2630 8" tabindex="0">
+                <div class="invoice-cell"><strong>TN/202608-103</strong><span class="muted">от 03.08</span><span class="draft-label">Черновик</span></div>
+                <div></div>
+                <div><strong>Клинический диагностический центр</strong><span class="muted address">Россия, Новосибирск,<br />улица Фрунзе, дом 19</span></div>
+                <div class="cargo"><strong>Лабораторное оборудование</strong><span>2 630 кг</span><span class="muted">8 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid draft-row t-body-m" data-search="tn 202608-147 уралтранс +73432881142 е591ар196 насосные агрегаты 4380 12" tabindex="0">
+                <div class="invoice-cell"><strong>TN/202608-147</strong><span class="muted">от 02.08</span><span class="draft-label">Черновик</span></div>
+                <div><strong>ООО «УралТранс»</strong><span class="muted">+7 343 288-11-42<br />Е591АР196</span></div>
+                <div></div>
+                <div class="cargo"><strong>Насосные агрегаты</strong><span>4 380 кг</span><span class="muted">12 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid draft-row t-body-m" data-search="tn 202608-205" tabindex="0">
+                <div class="invoice-cell"><strong>TN/202608-205</strong><span class="muted">от 01.08</span><span class="draft-label">Черновик</span></div>
+                <div></div><div></div><div class="cargo"></div>
+              </article>
+            </div>
+            <div id="archiveRows" hidden>
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-114 северный терминал +78126440852 т904ве178 арктик строй архангельск промышленное оборудование 6840 14" data-status="delivery" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-114</strong>
+                  <span class="muted">от 25.07</span>
+                  <div class="progress" aria-label="Тип 1: сдача груза"><span class="solid-segment"></span><span class="solid-segment"></span><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Накладная подписана перевозчиком на сдаче 5 августа 12:04 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>АО «Северный терминал»</strong><span class="muted">+7 812 644-08-52<br />Т904ВЕ178</span></div>
+                <div><strong>ООО «Арктик Строй»</strong><span class="muted address">Россия, 163045, Архангельская область,<br />г. Архангельск, Окружное шоссе,<br />дом 11</span></div>
+                <div class="cargo"><strong>Промышленное оборудование</strong><span>6 840 кг</span><span class="muted">14 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-682 волга карго +78462710018 м318кт163 канцпром самара офисная мебель 2160 32" data-status="transport-cost" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-682</strong>
+                  <span class="muted">от 29.07</span>
+                  <div class="progress second" aria-label="Тип 2: стоимость перевозки"><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Титул стоимости подписан грузоотправителем 4 августа 20:18 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Волга Карго»</strong><span class="muted">+7 846 271-00-18<br />М318КТ163</span></div>
+                <div><strong>ООО «КанцПром»</strong><span class="muted address">Россия, 443022, Самарская область,<br />г. Самара, Заводское шоссе,<br />дом 17, склад 6</span></div>
+                <div class="cargo"><strong>Офисная мебель</strong><span>2 160 кг</span><span class="muted">32 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-235 балтика транс +78124091872 к415ое178 невский терминал санкт-петербург холодильное оборудование 3480 7" data-status="delivery" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-235</strong>
+                  <span class="muted">от 26.07</span>
+                  <div class="progress" aria-label="Тип 1: сдача груза"><span class="solid-segment"></span><span class="solid-segment"></span><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Накладная подписана перевозчиком на сдаче 5 августа 10:42 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Балтика-Транс»</strong><span class="muted">+7 812 409-18-72<br />К415ОЕ178</span></div>
+                <div><strong>ООО «Невский Терминал»</strong><span class="muted address">Россия, 192241, Санкт-Петербург,<br />Софийская улица,<br />дом 96</span></div>
+                <div class="cargo"><strong>Холодильное оборудование</strong><span>3 480 кг</span><span class="muted">7 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-307 уралстройснаб +73432284015 р816кх196 монолит регион казань железобетонные конструкции 18700 22" data-status="delivery" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-307</strong>
+                  <span class="muted">от 27.07</span>
+                  <div class="progress" aria-label="Тип 1: сдача груза"><span class="solid-segment"></span><span class="solid-segment"></span><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Накладная подписана перевозчиком на сдаче 5 августа 09:18 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>АО «УралСтройСнаб»</strong><span class="muted">+7 343 228-40-15<br />Р816КХ196</span></div>
+                <div><strong>ООО «Монолит-Регион»</strong><span class="muted address">Россия, 420036, Республика Татарстан,<br />г. Казань, Тэцевская улица,<br />дом 5</span></div>
+                <div class="cargo"><strong>Железобетонные конструкции</strong><span>18 700 кг</span><span class="muted">22 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-451 медтехлаб +74951186204 н305ту799 клинический диагностический центр новосибирск реагенты лабораторные 760 124" data-status="delivery" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-451</strong>
+                  <span class="muted">от 28.07</span>
+                  <div class="progress" aria-label="Тип 1: сдача груза"><span class="solid-segment"></span><span class="solid-segment"></span><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Накладная подписана перевозчиком на сдаче 4 августа 19:36 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «МедТехЛаб»</strong><span class="muted">+7 495 118-62-04<br />Н305ТУ799</span></div>
+                <div><strong>Клинический диагностический центр</strong><span class="muted address">Россия, 630005, Новосибирская область,<br />г. Новосибирск, улица Фрунзе,<br />дом 19</span></div>
+                <div class="cargo"><strong>Реагенты лабораторные</strong><span>760 кг</span><span class="muted">124 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-593 сады придонья +78442553420 в742ос134 торговая сеть меридиан екатеринбург соки и фруктовые пюре 4930 360" data-status="delivery" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-593</strong>
+                  <span class="muted">от 30.07</span>
+                  <div class="progress" aria-label="Тип 1: сдача груза"><span class="solid-segment"></span><span class="solid-segment"></span><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Накладная подписана перевозчиком на сдаче 4 августа 17:09 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>АО «Сады Придонья»</strong><span class="muted">+7 8442 55-34-20<br />В742ОС134</span></div>
+                <div><strong>ООО «Торговая сеть Меридиан»</strong><span class="muted address">Россия, 620050, Свердловская область,<br />г. Екатеринбург, улица Монтажников,<br />дом 24</span></div>
+                <div class="cargo"><strong>Соки и фруктовые пюре</strong><span>4 930 кг</span><span class="muted">360 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-746 агрофлот +78612250973 к562не123 кубань фуд краснодар замороженные ягоды 5920 480" data-status="transport-cost" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-746</strong>
+                  <span class="muted">от 31.07</span>
+                  <div class="progress second" aria-label="Тип 2: стоимость перевозки"><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Титул стоимости подписан грузоотправителем 5 августа 08:51 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «АгроФлот»</strong><span class="muted">+7 861 225-09-73<br />К562НЕ123</span></div>
+                <div><strong>АО «Кубань Фуд»</strong><span class="muted address">Россия, 350072, Краснодарский край,<br />г. Краснодар, улица Тополиная Аллея,<br />дом 2/1</span></div>
+                <div class="cargo"><strong>Замороженные ягоды</strong><span>5 920 кг</span><span class="muted">480 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="completed" data-search="tn 202407-835 байкал экспресс +73952290266 а206рс138 восток ритейл иркутск бытовая техника 5240 48" data-status="transport-cost" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-835</strong>
+                  <span class="muted">от 01.08</span>
+                  <div class="progress second" aria-label="Тип 2: стоимость перевозки"><span class="solid-segment"></span><button class="solid-step" type="button" data-tooltip="Титул стоимости подписан грузоотправителем 5 августа 11:26 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Байкал Экспресс»</strong><span class="muted">+7 3952 29-02-66<br />А206РС138</span></div>
+                <div><strong>АО «Восток Ритейл»</strong><span class="muted address">Россия, 664033, Иркутская область,<br />г. Иркутск, улица Лермонтова,<br />дом 134</span></div>
+                <div class="cargo"><strong>Бытовая техника</strong><span>5 240 кг</span><span class="muted">48 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="rejected" data-search="tn 202407-166 транском север +78123358742 н618рв198 полярный снаб мурманск кабельная продукция 2780 46" data-status="carrier-rejection" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-166</strong>
+                  <span class="muted">от 24.07</span>
+                  <div class="progress" aria-label="Тип 1: отказ перевозчика"><span class="solid-segment"></span><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком на погрузке 5 августа 11:54 (UTC +03:00)"></button><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «ТрансКом Север»</strong><span class="muted">+7 812 335-87-42<br />Н618РВ198</span></div>
+                <div><strong>АО «Полярный Снаб»</strong><span class="muted address">Россия, 183038, Мурманская область,<br />г. Мурманск, Промышленная улица,<br />дом 12</span></div>
+                <div class="cargo"><strong>Кабельная продукция</strong><span>2 780 кг</span><span class="muted">46 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="rejected" data-search="tn 202407-294 дон логистик +78632271450 е591ар161 агрокомплекс юг ростов на дону упаковочные материалы 1640 210" data-status="carrier-rejection" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-294</strong>
+                  <span class="muted">от 26.07</span>
+                  <div class="progress" aria-label="Тип 1: отказ перевозчика"><span class="solid-segment"></span><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком на погрузке 5 августа 10:17 (UTC +03:00)"></button><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «Дон Логистик»</strong><span class="muted">+7 863 227-14-50<br />Е591АР161</span></div>
+                <div><strong>АО «Агрокомплекс Юг»</strong><span class="muted address">Россия, 344065, Ростовская область,<br />г. Ростов-на-Дону, Орская улица,<br />дом 31</span></div>
+                <div class="cargo"><strong>Упаковочные материалы</strong><span>1 640 кг</span><span class="muted">210 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="rejected" data-search="tn 202407-438 сибирь транс +73832094512 о164мх799 медснаб сибирь новосибирск диагностическое оборудование 1320 5" data-status="carrier-rejection" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-438</strong>
+                  <span class="muted">от 28.07</span>
+                  <div class="progress" aria-label="Тип 1: отказ перевозчика"><span class="solid-segment"></span><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком на погрузке 4 августа 18:43 (UTC +03:00)"></button><i></i><i></i></div>
+                </div>
+                <div><strong>ООО «Сибирь-Транс»</strong><span class="muted">+7 383 209-45-12<br />О164МХ799</span></div>
+                <div><strong>ООО «МедСнаб Сибирь»</strong><span class="muted address">Россия, 630052, Новосибирская область,<br />г. Новосибирск, Толмачёвская улица,<br />дом 43</span></div>
+                <div class="cargo"><strong>Диагностическое оборудование</strong><span>1 320 кг</span><span class="muted">5 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="rejected" data-search="tn 202407-571 урал экспресс +73432881060 в739ха196 энергомаш екатеринбург насосная станция 7460 3" data-status="transport-cost" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-571</strong>
+                  <span class="muted">от 30.07</span>
+                  <div class="progress second" aria-label="Тип 2: стоимость перевозки"><span class="solid-segment"></span><button class="error-step" type="button" data-tooltip="Отказано в подписи грузоотправителем 23 июля 16:30 (UTC +03:00)."></button></div>
+                </div>
+                <div><strong>ООО «Урал Экспресс»</strong><span class="muted">+7 343 288-10-60<br />В739ХА196</span></div>
+                <div><strong>АО «ЭнергоМаш»</strong><span class="muted address">Россия, 620010, Свердловская область,<br />г. Екатеринбург, улица Черняховского,<br />дом 86</span></div>
+                <div class="cargo"><strong>Насосная станция</strong><span>7 460 кг</span><span class="muted">3 шт</span></div>
+              </article>
+
+              <article class="table-row table-grid t-body-m" data-archive-section="rejected" data-search="tn 202407-729 волжские перевозки +78462714531 с908кт163 строймаркет самара сухие строительные смеси 9860 320" data-status="transport-cost" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>TN/202407-729</strong>
+                  <span class="muted">от 01.08</span>
+                  <div class="progress second" aria-label="Тип 2: стоимость перевозки"><span class="solid-segment"></span><button class="error-step" type="button" data-tooltip="Отказано в подписи грузоотправителем 24 июля 09:12 (UTC +03:00)."></button></div>
+                </div>
+                <div><strong>ООО «Волжские Перевозки»</strong><span class="muted">+7 846 271-45-31<br />С908КТ163</span></div>
+                <div><strong>ООО «СтройМаркет Самара»</strong><span class="muted address">Россия, 443022, Самарская область,<br />г. Самара, Заводское шоссе,<br />дом 25</span></div>
+                <div class="cargo"><strong>Сухие строительные смеси</strong><span>9 860 кг</span><span class="muted">320 шт</span></div>
+              </article>
+            </div>
+            <div id="applicationTableHead" class="table-head table-grid applications-grid t-body-s">
+              <label class="header-check"><input id="applicationSelectAll" type="checkbox" /><span class="visually-hidden">Выбрать все заявки</span></label>
+              <span>Заявка</span>
+              <span>Перевозчик</span>
+              <span>Пункт подачи ТС</span>
+              <span>Груз</span>
+            </div>
+            <div id="applicationRows">
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-118 северный терминал смирнов ио а427мр198 р818кх198" data-status="error" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-118</strong>
+                  <span class="muted">от 04.08</span>
+                  <span class="invoice-row-status">Ошибка подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Ошибка подписи грузоотправителя"><button class="error-step" type="button" data-tooltip="Ошибка подписания 4 августа 20:57 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «Северный терминал»</strong></div>
+                <div><strong>Смирнов И. О.</strong></div>
+                <div><strong>А427МР198<br /><span class="muted">Р818КХ198</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-207 балтика транс кузнецов дс к415ое178 н702ар178" data-status="waiting" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-207</strong>
+                  <span class="muted">от 05.08</span>
+                  <span class="invoice-row-status">Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Требует подписи грузоотправителя"><button class="striped" type="button" data-tooltip="Заказ-заявка передана на подпись 5 августа 09:14 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «Балтика-Транс»</strong></div>
+                <div><strong>Кузнецов Д. С.</strong></div>
+                <div><strong>К415ОЕ178<br /><span class="muted">Н702АР178</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-264 уралстройснаб морозов ап е591ар161" data-status="waiting" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-264</strong>
+                  <span class="muted">от 05.08</span>
+                  <span class="invoice-row-status">Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Требует подписи грузоотправителя"><button class="striped" type="button" data-tooltip="Заказ-заявка передана на подпись 5 августа 10:32 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «УралСтройСнаб»</strong></div>
+                <div><strong>Морозов А. П.</strong></div>
+                <div><strong>Е591АР161</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-319 медтехлаб волков сн н305ту799 о164мх799" data-status="waiting" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-319</strong>
+                  <span class="muted">от 04.08</span>
+                  <span class="invoice-row-status">Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Требует подписи грузоотправителя"><button class="striped" type="button" data-tooltip="Заказ-заявка передана на подпись 4 августа 18:06 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «МедТехЛаб»</strong></div>
+                <div><strong>Волков С. Н.</strong></div>
+                <div><strong>Н305ТУ799<br /><span class="muted">О164МХ799</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-403 сады придонья соколов рв в742ос134" data-status="error" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-403</strong>
+                  <span class="muted">от 04.08</span>
+                  <span class="invoice-row-status">Ошибка подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Ошибка подписи грузоотправителя"><button class="error-step" type="button" data-tooltip="Ошибка подписания 4 августа 17:41 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «Сады Придонья»</strong></div>
+                <div><strong>Соколов Р. В.</strong></div>
+                <div><strong>В742ОС134</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-527 логистик парк дон лебедев ми т904ве178 а531но178" data-status="waiting" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-527</strong>
+                  <span class="muted">от 03.08</span>
+                  <span class="invoice-row-status">Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Требует подписи грузоотправителя"><button class="striped" type="button" data-tooltip="Заказ-заявка передана на подпись 3 августа 15:28 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «Логистик Парк Дон»</strong></div>
+                <div><strong>Лебедев М. И.</strong></div>
+                <div><strong>Т904ВЕ178<br /><span class="muted">А531НО178</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-681 арктик строй орлов ва с117ор71" data-status="waiting" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-681</strong>
+                  <span class="muted">от 02.08</span>
+                  <span class="invoice-row-status">Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Требует подписи грузоотправителя"><button class="striped" type="button" data-tooltip="Заказ-заявка передана на подпись 2 августа 12:05 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «Арктик Строй»</strong></div>
+                <div><strong>Орлов В. А.</strong></div>
+                <div><strong>С117ОР71</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-745 восток ритейл федоров ке а206рс138 м908тк138" data-status="waiting" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-745</strong>
+                  <span class="muted">от 01.08</span>
+                  <span class="invoice-row-status">Требует подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Требует подписи грузоотправителя"><button class="striped" type="button" data-tooltip="Заказ-заявка передана на подпись 1 августа 16:49 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «Восток Ритейл»</strong></div>
+                <div><strong>Федоров К. Е.</strong></div>
+                <div><strong>А206РС138<br /><span class="muted">М908ТК138</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-892 промышленная комплектация никитин ол у841мн799" data-status="error" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-892</strong>
+                  <span class="muted">от 31.07</span>
+                  <span class="invoice-row-status">Ошибка подписи грузоотправителя</span>
+                  <div class="progress second" aria-label="Ошибка подписи грузоотправителя"><button class="error-step" type="button" data-tooltip="Ошибка подписания 31 июля 14:22 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «Промышленная Комплектация»</strong></div>
+                <div><strong>Никитин О. Л.</strong></div>
+                <div><strong>У841МН799</strong></div>
+              </article>
+            </div>
+            <div id="counterpartyApplicationRows" hidden>
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-936 волга карго романов ии м318кт163 н420ар163" data-status="carrier-signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-936</strong>
+                  <span class="muted">от 05.08</span>
+                  <span class="invoice-row-status">Ожидает подпись перевозчика</span>
+                  <div class="progress second" aria-label="Ожидает подпись перевозчика"><button class="application-approved" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 5 августа 09:46 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «Волга Карго»</strong></div>
+                <div><strong>Романов И. И.</strong></div>
+                <div><strong>М318КТ163<br /><span class="muted">Н420АР163</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-914 фармлогистика егоров ал у841мн799" data-status="carrier-signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-914</strong>
+                  <span class="muted">от 04.08</span>
+                  <span class="invoice-row-status">Ожидает подпись перевозчика</span>
+                  <div class="progress second" aria-label="Ожидает подпись перевозчика"><button class="application-approved" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 4 августа 19:12 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «ФармЛогистика»</strong></div>
+                <div><strong>Егоров А. Л.</strong></div>
+                <div><strong>У841МН799</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-867 северная магистраль алексеев па т904ве178 в608ка178" data-status="carrier-signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-867</strong>
+                  <span class="muted">от 04.08</span>
+                  <span class="invoice-row-status">Ожидает подпись перевозчика</span>
+                  <div class="progress second" aria-label="Ожидает подпись перевозчика"><button class="application-approved" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 4 августа 17:48 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «Северная Магистраль»</strong></div>
+                <div><strong>Алексеев П. А.</strong></div>
+                <div><strong>Т904ВЕ178<br /><span class="muted">В608КА178</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-803 кубань фуд захаров ев к562не123" data-status="carrier-signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-803</strong>
+                  <span class="muted">от 03.08</span>
+                  <span class="invoice-row-status">Ожидает подпись перевозчика</span>
+                  <div class="progress second" aria-label="Ожидает подпись перевозчика"><button class="application-approved" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 3 августа 14:12 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «Кубань Фуд»</strong></div>
+                <div><strong>Захаров Е. В.</strong></div>
+                <div><strong>К562НЕ123</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-759 технопарк тула павлов нс с117ор71 е255рм71" data-status="carrier-signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-759</strong>
+                  <span class="muted">от 02.08</span>
+                  <span class="invoice-row-status">Ожидает подпись перевозчика</span>
+                  <div class="progress second" aria-label="Ожидает подпись перевозчика"><button class="application-approved" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 2 августа 20:31 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>АО «Технопарк Тула»</strong></div>
+                <div><strong>Павлов Н. С.</strong></div>
+                <div><strong>С117ОР71<br /><span class="muted">Е255РМ71</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-search="zz 202608-702 канцпром самара данилов ви р816кх196" data-status="carrier-signature" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-702</strong>
+                  <span class="muted">от 01.08</span>
+                  <span class="invoice-row-status">Ожидает подпись перевозчика</span>
+                  <div class="progress second" aria-label="Ожидает подпись перевозчика"><button class="application-approved" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 1 августа 10:54 (UTC +03:00)"></button><i></i></div>
+                </div>
+                <div><strong>ООО «КанцПром Самара»</strong></div>
+                <div><strong>Данилов В. И.</strong></div>
+                <div><strong>Р816КХ196</strong></div>
+              </article>
+            </div>
+            <div id="draftApplicationRows" hidden>
+              <article class="table-row table-grid applications-grid draft-row t-body-m" data-search="zz 202608-230 контур транспорт иванов ан м472ту799 р381ок799" tabindex="0">
+                <div class="invoice-cell"><strong>ZZ/202608-230</strong><span class="muted">от 05.08</span><span class="invoice-row-status">Черновик</span></div>
+                <div><strong>ООО «Контур Транспорт»</strong></div>
+                <div><strong>Иванов А. Н.</strong></div>
+                <div><strong>М472ТУ799<br /><span class="muted">Р381ОК799</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid draft-row t-body-m" data-search="zz 202608-276 северный терминал а427мр198" tabindex="0">
+                <div class="invoice-cell"><strong>ZZ/202608-276</strong><span class="muted">от 04.08</span><span class="invoice-row-status">Черновик</span></div>
+                <div><strong>АО «Северный терминал»</strong></div>
+                <div></div>
+                <div><strong>А427МР198</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid draft-row t-body-m" data-search="zz 202608-341 уралстройснаб морозов ап" tabindex="0">
+                <div class="invoice-cell"><strong>ZZ/202608-341</strong><span class="muted">от 03.08</span><span class="invoice-row-status">Черновик</span></div>
+                <div><strong>АО «УралСтройСнаб»</strong></div>
+                <div><strong>Морозов А. П.</strong></div>
+                <div></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid draft-row t-body-m" data-search="zz 202608-419 соколов рв в742ос134" tabindex="0">
+                <div class="invoice-cell"><strong>ZZ/202608-419</strong><span class="muted">от 02.08</span><span class="invoice-row-status">Черновик</span></div>
+                <div></div>
+                <div><strong>Соколов Р. В.</strong></div>
+                <div><strong>В742ОС134</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid draft-row t-body-m" data-search="zz 202608-508" tabindex="0">
+                <div class="invoice-cell"><strong>ZZ/202608-508</strong><span class="muted">от 01.08</span><span class="invoice-row-status">Черновик</span></div>
+                <div></div><div></div><div></div>
+              </article>
+            </div>
+            <div id="archiveApplicationRows" hidden>
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="completed" data-search="zz 202608-126 северный терминал петров ав м123мм136 р818кх198" data-status="completed" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-126</strong>
+                  <span class="muted">от 29.07</span>
+                  <span class="invoice-row-status">Документооборот завершен</span>
+                  <div class="progress second" aria-label="Завершенная заявка"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 4 августа 20:21 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана перевозчиком 4 августа 20:57 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>АО «Северный терминал»</strong></div>
+                <div><strong>Петров А. В.</strong></div>
+                <div><strong>М123ММ136<br /><span class="muted">Р818КХ198</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="completed" data-search="zz 202608-248 балтика транс кузнецов дс к415ое178 н702ар178" data-status="completed" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-248</strong>
+                  <span class="muted">от 30.07</span>
+                  <span class="invoice-row-status">Документооборот завершен</span>
+                  <div class="progress second" aria-label="Завершенная заявка"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 4 августа 16:08 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана перевозчиком 4 августа 16:42 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Балтика-Транс»</strong></div>
+                <div><strong>Кузнецов Д. С.</strong></div>
+                <div><strong>К415ОЕ178<br /><span class="muted">Н702АР178</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="completed" data-search="zz 202608-375 уралстройснаб морозов ап е591ар161" data-status="completed" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-375</strong>
+                  <span class="muted">от 31.07</span>
+                  <span class="invoice-row-status">Документооборот завершен</span>
+                  <div class="progress second" aria-label="Завершенная заявка"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 3 августа 13:17 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана перевозчиком 3 августа 14:05 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>АО «УралСтройСнаб»</strong></div>
+                <div><strong>Морозов А. П.</strong></div>
+                <div><strong>Е591АР161</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="completed" data-search="zz 202608-041 горизонт петров ав м123мм136" data-status="completed" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-041</strong>
+                  <span class="muted">от 05.08</span>
+                  <span class="invoice-row-status">Документооборот завершен</span>
+                  <div class="progress second" aria-label="Согласовано перевозчиком"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 5 августа 10:18 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана перевозчиком 5 августа 11:02 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Горизонт»</strong></div>
+                <div><strong>Петров А. В.</strong></div>
+                <div><strong>М123ММ136</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="completed" data-search="zz 202608-493 медтехлаб волков сн н305ту799 о164мх799" data-status="completed" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-493</strong>
+                  <span class="muted">от 01.08</span>
+                  <span class="invoice-row-status">Документооборот завершен</span>
+                  <div class="progress second" aria-label="Завершенная заявка"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 2 августа 18:36 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана перевозчиком 2 августа 19:11 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «МедТехЛаб»</strong></div>
+                <div><strong>Волков С. Н.</strong></div>
+                <div><strong>Н305ТУ799<br /><span class="muted">О164МХ799</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="completed" data-search="zz 202608-617 сады придонья соколов рв в742ос134" data-status="completed" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-617</strong>
+                  <span class="muted">от 02.08</span>
+                  <span class="invoice-row-status">Документооборот завершен</span>
+                  <div class="progress second" aria-label="Завершенная заявка"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 2 августа 11:24 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана перевозчиком 2 августа 12:02 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>АО «Сады Придонья»</strong></div>
+                <div><strong>Соколов Р. В.</strong></div>
+                <div><strong>В742ОС134</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="completed" data-search="zz 202608-784 байкал экспресс федоров ке а206рс138 м908тк138" data-status="completed" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-784</strong>
+                  <span class="muted">от 03.08</span>
+                  <span class="invoice-row-status">Документооборот завершен</span>
+                  <div class="progress second" aria-label="Завершенная заявка"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 1 августа 15:40 (UTC +03:00)"></button><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана перевозчиком 1 августа 16:19 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Байкал Экспресс»</strong></div>
+                <div><strong>Федоров К. Е.</strong></div>
+                <div><strong>А206РС138<br /><span class="muted">М908ТК138</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="rejected" data-search="zz 202608-193 транском север орлов ва н618рв198" data-status="rejected" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-193</strong>
+                  <span class="muted">от 29.07</span>
+                  <span class="invoice-row-status">Отказ в подписи перевозчика</span>
+                  <div class="progress second" aria-label="Отказ в подписи перевозчика"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 5 августа 11:21 (UTC +03:00)"></button><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком 5 августа 11:54 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «ТрансКом Север»</strong></div>
+                <div><strong>Орлов В. А.</strong></div>
+                <div><strong>Н618РВ198</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="rejected" data-search="zz 202608-326 дон логистик лебедев ми е591ар161 а531но178" data-status="rejected" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-326</strong>
+                  <span class="muted">от 30.07</span>
+                  <span class="invoice-row-status">Отказ в подписи перевозчика</span>
+                  <div class="progress second" aria-label="Отказ в подписи перевозчика"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 5 августа 09:42 (UTC +03:00)"></button><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком 5 августа 10:06 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Дон Логистик»</strong></div>
+                <div><strong>Лебедев М. И.</strong></div>
+                <div><strong>Е591АР161<br /><span class="muted">А531НО178</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="rejected" data-search="zz 202608-457 сибирь транс никитин ол о164мх799" data-status="rejected" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-457</strong>
+                  <span class="muted">от 31.07</span>
+                  <span class="invoice-row-status">Отказ в подписи перевозчика</span>
+                  <div class="progress second" aria-label="Отказ в подписи перевозчика"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 4 августа 18:11 (UTC +03:00)"></button><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком 4 августа 18:43 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Сибирь-Транс»</strong></div>
+                <div><strong>Никитин О. Л.</strong></div>
+                <div><strong>О164МХ799</strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="rejected" data-search="zz 202608-582 урал экспресс павлов нс в739ха196 е255рм196" data-status="rejected" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-582</strong>
+                  <span class="muted">от 01.08</span>
+                  <span class="invoice-row-status">Отказ в подписи перевозчика</span>
+                  <div class="progress second" aria-label="Отказ в подписи перевозчика"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 3 августа 14:28 (UTC +03:00)"></button><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком 3 августа 15:12 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Урал Экспресс»</strong></div>
+                <div><strong>Павлов Н. С.</strong></div>
+                <div><strong>В739ХА196<br /><span class="muted">Е255РМ196</span></strong></div>
+              </article>
+
+              <article class="table-row table-grid applications-grid t-body-m" data-archive-section="rejected" data-search="zz 202608-716 волжские перевозки данилов ви с908кт163" data-status="rejected" tabindex="0">
+                <div class="invoice-cell">
+                  <strong>ZZ/202608-716</strong>
+                  <span class="muted">от 02.08</span>
+                  <span class="invoice-row-status">Отказ в подписи перевозчика</span>
+                  <div class="progress second" aria-label="Отказ в подписи перевозчика"><button class="solid-step" type="button" data-tooltip="Заказ-заявка подписана грузоотправителем 2 августа 12:37 (UTC +03:00)"></button><button class="error-step" type="button" data-tooltip="Отказано в подписи перевозчиком 2 августа 13:04 (UTC +03:00)"></button></div>
+                </div>
+                <div><strong>ООО «Волжские Перевозки»</strong></div>
+                <div><strong>Данилов В. И.</strong></div>
+                <div><strong>С908КТ163</strong></div>
+              </article>
+            </div>
+            <div id="emptyState" class="empty-state" hidden>
+              <div class="empty-state-content">
+                <img src="./assets/icons/docs.svg" alt="" />
+                <strong class="t-body-m">Накладные не найдены</strong>
+              </div>
+            </div>
+          </div>
+          <div id="assignmentsEmpty" class="assignments-empty" hidden>
+            <img src="./assets/icons/docs.svg" alt="" />
+            <strong class="t-body-m">Поручения не найдены</strong>
+          </div>
+        </section>
+
+        <section id="receiptDetailView" class="receipt-detail-view" aria-labelledby="receiptDetailTitle" hidden>
+          <header class="receipt-detail-header">
+            <button id="receiptDetailBack" class="receipt-detail-back" type="button" aria-label="Вернуться к списку расписок"><img src="./assets/icons/arrow-a-left.svg" alt="" /></button>
+            <div class="receipt-detail-heading">
+              <h1 id="receiptDetailTitle" class="t-heading-xl t-reset">Экспедиторская расписка №&nbsp;<span id="receiptDetailNumber"></span></h1>
+              <div class="receipt-detail-meta t-body-m">
+                <span class="receipt-status">Документооборот завершен</span>
+                <span>Создана из поручения № <a href="#" id="receiptDetailOrder">120</a></span>
+              </div>
+            </div>
+            <a class="receipt-download-button t-body-m" href="./assets/receipt-page-top.png" download="Экспедиторская-расписка.png"><img src="./assets/icons/net-download.svg" alt="" />Скачать</a>
+          </header>
+
+          <div class="receipt-document-container">
+            <div class="receipt-document-viewer" aria-label="Предпросмотр экспедиторской расписки, две страницы">
+              <img class="receipt-viewer-background" src="./assets/receipt-viewer-bg.png" alt="" />
+              <img class="receipt-document-page receipt-document-page-top" src="./assets/receipt-page-top.png" alt="Первая страница экспедиторской расписки" />
+              <img class="receipt-document-page receipt-document-page-bottom" src="./assets/receipt-page-bottom.png" alt="Вторая страница экспедиторской расписки" />
+            </div>
+          </div>
+        </section>
+
+        <section id="assignmentDetailView" class="receipt-detail-view assignment-detail-view" aria-labelledby="assignmentDetailTitle" hidden>
+          <header class="receipt-detail-header assignment-detail-header">
+            <button id="assignmentDetailBack" class="receipt-detail-back" type="button" aria-label="Вернуться к списку поручений"><img src="./assets/icons/arrow-a-left.svg" alt="" /></button>
+            <div class="receipt-detail-heading">
+              <h1 id="assignmentDetailTitle" class="t-heading-xl t-reset">Поручение экспедитору №&nbsp;<span id="assignmentDetailNumber"></span></h1>
+              <div id="assignmentDetailStatus" class="assignment-detail-status t-body-m" hidden>Черновик</div>
+            </div>
+            <button class="assignment-detail-actions t-body-m" type="button">Действия <img src="./assets/icons/arrow-c-down.svg" alt="" /></button>
+          </header>
+
+          <div class="receipt-document-container">
+            <div class="receipt-document-viewer" aria-label="Предпросмотр поручения экспедитору, две страницы">
+              <img class="receipt-viewer-background" src="./assets/assignment-viewer-bg.png" alt="" />
+              <img class="receipt-document-page receipt-document-page-top" src="./assets/assignment-page-top.png" alt="Первая страница поручения экспедитору" />
+              <img class="receipt-document-page receipt-document-page-bottom" src="./assets/assignment-page-bottom.png" alt="Вторая страница поручения экспедитору" />
+            </div>
+          </div>
+        </section>
+
+        <section id="applicationDetailView" class="receipt-detail-view application-detail-view" aria-labelledby="applicationDetailTitle" hidden>
+          <header class="receipt-detail-header application-detail-header">
+            <button id="applicationDetailBack" class="receipt-detail-back" type="button" aria-label="Вернуться к списку заказов-заявок"><img src="./assets/icons/arrow-a-left.svg" alt="" /></button>
+            <div class="receipt-detail-heading">
+              <h1 id="applicationDetailTitle" class="t-heading-xl t-reset">Заявка № <span id="applicationDetailNumber"></span></h1>
+              <div id="applicationDetailStatus" class="assignment-detail-status t-body-m" hidden>Черновик</div>
+            </div>
+            <div class="application-header-actions t-body-m">
+              <button type="button">Создать накладную</button>
+              <button type="button">Действия <img src="./assets/icons/arrow-c-down.svg" alt="" /></button>
+            </div>
+          </header>
+
+          <nav class="application-detail-tabs t-body-m" role="tablist" aria-label="Разделы заявки">
+            <button class="selected" type="button" role="tab" aria-selected="true">Общие данные</button>
+            <button type="button" role="tab" aria-selected="false">Доставки</button>
+            <button type="button" role="tab" aria-selected="false">Требования</button>
+            <button type="button" role="tab" aria-selected="false">Участники</button>
+            <button class="application-completed-tab" type="button" role="tab" aria-selected="false" hidden>Транспортное средство</button>
+            <button class="application-completed-tab" type="button" role="tab" aria-selected="false" hidden>Водители</button>
+            <button class="application-completed-tab" type="button" role="tab" aria-selected="false" hidden>Стоимость</button>
+          </nav>
+
+          <div class="application-detail-content">
+            <section class="application-document-card application-card">
+              <h2>Документ</h2>
+              <dl>
+                <div><dt>Номер</dt><dd id="applicationInfoNumber"></dd></div>
+                <div><dt>Дата</dt><dd id="applicationInfoDate"></dd></div>
+                <div><dt>УИД документа</dt><dd>419ca1fd-5c80-4581-82b1-229553cb552d</dd></div>
+              </dl>
+            </section>
+
+            <section class="application-party-section">
+              <h2>Перевозчик</h2>
+              <div class="application-party-grid">
+                <article class="application-card"><h3>Составитель</h3><dl><div><dt>Наименование</dt><dd id="applicationCarrierName">ООО «Глобал Логистик»</dd></div></dl></article>
+                <article class="application-card"><h3>Основание</h3><dl><div><dt>Полномочия</dt><dd>Погрузка груза в транспортное средство, заполнение и подписание транспортной накладной</dd></div></dl></article>
+              </div>
+            </section>
+
+            <section class="application-party-section">
+              <h2>Грузоотправитель</h2>
+              <div class="application-party-grid">
+                <article class="application-card"><h3>Составитель</h3><dl><div><dt>Наименование</dt><dd>ООО «МебельТрейд»</dd></div></dl></article>
+                <article class="application-card"><h3>Основание</h3><dl><div><dt>Полномочия</dt><dd>Погрузка груза в транспортное средство, заполнение и подписание транспортной накладной</dd></div></dl></article>
+              </div>
+            </section>
+          </div>
+
+          <footer class="application-detail-actions t-body-m">
+            <button id="applicationPrimaryAction" class="primary" type="button">Подписать</button>
+            <button id="applicationEditAction" type="button">Редактировать</button>
+            <button id="applicationDetailListBack" type="button">Вернуться к списку</button>
+          </footer>
+        </section>
+
+        <section id="invoiceDetailView" class="receipt-detail-view invoice-detail-view" aria-labelledby="invoiceDetailTitle" hidden>
+          <header class="receipt-detail-header invoice-detail-header">
+            <button id="invoiceDetailBack" class="receipt-detail-back" type="button" aria-label="Вернуться к списку накладных"><img src="./assets/icons/arrow-a-left.svg" alt="" /></button>
+            <div class="receipt-detail-heading">
+              <h1 id="invoiceDetailTitle" class="t-heading-xl t-reset"><span id="invoiceDetailNumber"></span></h1>
+              <div id="invoiceDetailStatus" class="assignment-detail-status t-body-m" hidden>Черновик</div>
+            </div>
+          </header>
+
+          <div class="invoice-detail-body">
+            <div class="invoice-timeline" aria-label="Этапы транспортной накладной">
+              <div id="invoiceCreatedStep" class="invoice-timeline-step completed passed collapsed">
+                <span class="invoice-timeline-dot"></span><button id="invoiceCreatedToggle" type="button" aria-expanded="false">Документ создан <img class="invoice-timeline-chevron" src="./assets/icons/arrow-shape-triangle-a-down.svg" alt="" /></button>
+                <div id="invoiceCreatedSignature" class="invoice-signatures invoice-created-signature t-body-m" hidden>
+                  <div><img src="./assets/icons/tech-phone-smart.svg" alt="" /> Иванов Антон Антонович</div>
+                </div>
+              </div>
+              <div id="invoiceLoadingStep" class="invoice-timeline-step completed expanded">
+                <span class="invoice-timeline-dot"></span><button id="invoiceLoadingToggle" type="button" aria-expanded="true"><span id="invoiceLoadingTitle">Погрузка</span> <img class="invoice-timeline-chevron expanded" src="./assets/icons/arrow-shape-triangle-a-down.svg" alt="" /></button>
+                <div id="invoiceLoadingSignatures" class="invoice-signatures t-body-m">
+                  <div id="invoiceSenderSignature"><img id="invoiceSenderIcon" src="./assets/icons/cert-rosette.svg" alt="" /> Отправитель <a id="invoiceSenderSigner" href="#">Маслов В. В.</a></div>
+                  <div class="is-muted"><img src="./assets/icons/tech-phone-smart.svg" alt="" /> Водитель <span id="invoiceDriverName" class="invoice-driver-name" hidden>Иванков Г. Т.</span></div>
+                  <div id="invoiceCarrierSignature" class="is-muted"><img id="invoiceCarrierIcon" src="./assets/icons/cert-rosette.svg" alt="" /> Перевозчик <span id="invoiceCarrierSigner" class="invoice-signer-name" hidden>Корнилов Д. А.</span></div>
+                  <div id="invoiceLoadingComment" class="invoice-timeline-comment" hidden>Отказано в подписи: Груз поврежден</div>
+                  <div id="invoiceQrSignature" class="is-muted"><img src="./assets/icons/scan-barcode-qr.svg" alt="" /> <span id="invoiceQrLabel">QR-код</span></div>
+                </div>
+              </div>
+              <div id="invoiceUnloadingStep" class="invoice-timeline-step">
+                <span class="invoice-timeline-dot"></span><button id="invoiceUnloadingToggle" type="button" aria-expanded="false"><span id="invoiceUnloadingTitle">Разгрузка</span> <img id="invoiceUnloadingChevron" class="invoice-timeline-chevron" src="./assets/icons/arrow-shape-triangle-a-down.svg" alt="" hidden /></button><button id="invoiceUnloadingSectionLink" class="invoice-timeline-section-link" type="button" hidden>Перейти в раздел</button>
+                <div id="invoiceUnloadingSignatures" class="invoice-signatures invoice-unloading-signatures t-body-m" hidden>
+                  <div><img src="./assets/icons/cert-rosette.svg" alt="" /> Получатель <span id="invoiceUnloadingRecipientSigner" class="invoice-signer-name">Петров Е. О.</span></div>
+                  <div id="invoiceUnloadingComment" class="invoice-timeline-comment">Груз и упаковка не повреждены</div>
+                  <div id="invoiceUnloadingDriver" class="is-muted"><img src="./assets/icons/tech-phone-smart.svg" alt="" /> Водитель <span id="invoiceUnloadingDriverName" class="invoice-driver-name" hidden>Иванков Г. Т.</span></div>
+                  <div id="invoiceUnloadingCarrier" class="is-muted"><img src="./assets/icons/cert-rosette.svg" alt="" /> Перевозчик <span id="invoiceUnloadingCarrierSigner" class="invoice-signer-name" hidden>Корнилов Д. А.</span></div>
+                </div>
+              </div>
+              <div id="invoiceSecondUnloadingStep" class="invoice-timeline-step" hidden>
+                <span class="invoice-timeline-dot"></span><button id="invoiceSecondUnloadingToggle" type="button" aria-expanded="true">Разгрузка 2 <img id="invoiceSecondUnloadingChevron" class="invoice-timeline-chevron expanded" src="./assets/icons/arrow-shape-triangle-a-down.svg" alt="" /></button>
+                <div id="invoiceSecondUnloadingSignatures" class="invoice-signatures invoice-unloading-signatures t-body-m">
+                  <div><img src="./assets/icons/cert-rosette.svg" alt="" /> Получатель <span class="invoice-signer-name">Петров Е. О.</span></div>
+                  <div class="invoice-timeline-comment">Все хорошо</div>
+                  <div class="is-muted"><img src="./assets/icons/tech-phone-smart.svg" alt="" /> Водитель</div>
+                  <div class="is-muted"><img src="./assets/icons/cert-rosette.svg" alt="" /> Перевозчик</div>
+                </div>
+              </div>
+              <div id="invoiceCostStep" class="invoice-timeline-step completed" hidden>
+                <span class="invoice-timeline-dot"></span><button id="invoiceCostToggle" type="button" aria-expanded="true">Титул стоимости <img id="invoiceCostChevron" class="invoice-timeline-chevron expanded" src="./assets/icons/arrow-shape-triangle-a-down.svg" alt="" /></button>
+                <div id="invoiceCostSignatures" class="invoice-signatures t-body-m">
+                  <div><img src="./assets/icons/cert-rosette.svg" alt="" /> Перевозчик <span class="invoice-signer-name">Петров Е. О.</span></div>
+                  <div id="invoiceCostSenderSignature" class="is-muted"><img id="invoiceCostSenderIcon" src="./assets/icons/cert-rosette.svg" alt="" /> Отправитель <span id="invoiceCostSenderSigner" class="invoice-signer-name" hidden>Маслов В. В.</span></div>
+                </div>
+              </div>
+              <div id="invoiceCompleteStep" class="invoice-timeline-step last"><span class="invoice-timeline-dot"></span><strong>Документооборот завершен</strong></div>
+            </div>
+
+            <div class="invoice-current-status t-body-l">
+              <div class="invoice-current-status-content">
+                <span class="invoice-status-label"><span id="invoiceCurrentStatusText">Ожидает подписи водителя</span><img id="invoiceStatusInfo" src="./assets/icons/info-circle.svg" alt="Подробности статуса" hidden /></span>
+                <div id="invoiceStatusActions" class="invoice-status-actions" hidden>
+                  <button id="invoicePrimaryAction" class="invoice-sign-button t-body-m" type="button">Подписать</button>
+                  <button id="invoiceSecondaryAction" class="invoice-secondary-button t-body-m" type="button">Отказать в подписи</button>
+                  <button id="invoiceTertiaryAction" class="invoice-secondary-button t-body-m" type="button" hidden>Согласовать с водителем</button>
+                </div>
+              </div>
+              <button class="invoice-status-menu" type="button" aria-label="Действия со статусом"><img src="./assets/icons/menu-dots-h.svg" alt="" /></button>
+            </div>
+
+            <div class="invoice-details">
+              <section id="invoiceCostDetails" class="invoice-info-section invoice-cost-details" hidden>
+                <h2>Стоимость перевозки груза</h2>
+                <h3>Перевозчик</h3>
+                <dl>
+                  <div><dt>Стоимость перевозки без налога – всего</dt><dd>100 000</dd></div>
+                  <div><dt>Налоговая ставка</dt><dd>5%</dd></div>
+                  <div><dt>Сумма налога, предъявляемая покупателю</dt><dd>5 000</dd></div>
+                  <div><dt>Краткое название</dt><dd>АО «Северный терминал»</dd></div>
+                </dl>
+              </section>
+
+              <section class="invoice-info-section">
+                <h2>Сведения о накладной</h2>
+                <dl>
+                  <div><dt>Содержание операции</dt><dd>Лицом, осуществляющим погрузку груза, при указанных обстоятельствах передан водителю груз с указанными характеристиками</dd></div>
+                  <div><dt>Порядковый номер транспортной накладной</dt><dd id="invoiceInfoNumber"></dd></div>
+                  <div><dt>Дата составления транспортной накладной</dt><dd id="invoiceInfoDate">23.07.2026</dd></div>
+                  <div><dt>Порядковый номер заказа (заявки)</dt><dd>Z-65034-677</dd></div>
+                  <div><dt>Дата заказа (заявки)</dt><dd>23.07.2026</dd></div>
+                </dl>
+              </section>
+
+              <section class="invoice-info-section">
+                <h2>Грузоотправитель</h2>
+                <dl>
+                  <div><dt>Тип участника</dt><dd>юридическое лицо</dd></div>
+                  <div><dt>Название организации</dt><dd id="invoiceSenderName">ООО «Хендэ Мотор СНГ»</dd></div>
+                  <div><dt>ИНН-КПП</dt><dd>4061639049-126643745</dd></div>
+                  <div><dt>Адрес</dt><dd>Россия, 620000, г. Екатеринбург, ул. Фурманова, дом 126</dd></div>
+                  <div><dt>Контакты</dt><dd id="invoiceSenderContact">+79006667766</dd></div>
+                </dl>
+              </section>
+
+              <section class="invoice-info-section">
+                <h2>Грузополучатель</h2>
+                <dl>
+                  <div><dt>Тип участника</dt><dd>юридическое лицо</dd></div>
+                  <div><dt>Название организации</dt><dd id="invoiceRecipientName">ООО «Инжиниринг Сервис»</dd></div>
+                  <div><dt>ИНН-КПП</dt><dd>2979065531-882643179</dd></div>
+                  <div><dt>Адрес</dt><dd id="invoiceRecipientAddress">Россия, 620000, г. Екатеринбург, площадь Октябрьская, дом 1</dd></div>
+                  <div><dt>Контакты</dt><dd>+79003332222</dd></div>
+                  <div><dt>Адрес места доставки груза</dt><dd>Россия, 789876, г. Москва, ул. Люсиновская, дом 68</dd></div>
+                </dl>
+              </section>
+
+              <section class="invoice-info-section invoice-cargo-section">
+                <h2>Сведения о грузе</h2>
+                <dl>
+                  <div><dt>Общее количество грузовых мест, шт</dt><dd id="invoiceCargoPlaces">60</dd></div>
+                  <div><dt>Общая масса нетто, кг</dt><dd id="invoiceCargoNet">3000</dd></div>
+                  <div><dt>Общая масса брутто, кг</dt><dd id="invoiceCargoGross">3900</dd></div>
+                </dl>
+                <div class="invoice-cargo-table t-body-m">
+                  <div class="invoice-cargo-row head"><span>Наименование</span><span>Состояние</span><span>Способ упаковки</span><span>Вид тары</span><span>Кол-во мест</span><span>Масса, кг</span><span>Маркировка</span></div>
+                  <div class="invoice-cargo-row"><span id="invoiceCargoName">Холодильное оборудование</span><span>Хорошее</span><span>Защитная плёнка</span><span>Тара отсутствует</span><span>20</span><span>1000</span><span>5585938487</span></div>
+                  <div class="invoice-cargo-row"><span>Холодильное оборудование</span><span>Хорошее</span><span>Защитная плёнка</span><span>4D</span><span>40</span><span>2000</span><span>5585938487</span></div>
+                </div>
+              </section>
+
+              <section class="invoice-info-section">
+                <h2>Указания грузоотправителя</h2>
+                <dl><div><dt>Особые условия перевозки</dt><dd>Температурный режим и сохранность упаковки должны контролироваться на всём маршруте</dd></div></dl>
+              </section>
+
+              <section class="invoice-info-section">
+                <h2>Перевозчик и водитель</h2>
+                <dl>
+                  <div><dt>Перевозчик</dt><dd id="invoiceCarrierName">ООО «Волга Карго»</dd></div>
+                  <div><dt>Водитель</dt><dd>Маслов Владимир Владимирович</dd></div>
+                  <div><dt>Телефон водителя</dt><dd>+7 909 021-43-28</dd></div>
+                </dl>
+              </section>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <button id="helpButton" class="help-button" aria-label="Центр помощи"><img src="./assets/icons/asset-02.svg" alt="" /><span>1</span></button>
+      <div id="helpPopover" class="help-popover" hidden><b>Нужна помощь?</b><p>Напишите нам — ответим на вопросы по накладным.</p><button>Открыть центр помощи</button></div>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script src="./app.js?v=20260824-24"></script>
+  </body>
+</html>
