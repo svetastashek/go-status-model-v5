@@ -1890,7 +1890,7 @@ sectionButtons.forEach((button) => {
       invoices: 'Накладные',
     };
     pageTitle.textContent = documentTitles[activeDocumentTab] || 'Накладные';
-    document.title = 'Тест статусной модели (4 вариант)';
+    document.title = 'Тест статусной модели (5 вариант)';
     toolbar.classList.toggle('applications-mode', activeDocumentTab === 'applications');
     toolbar.classList.toggle('assignments-mode', activeDocumentTab === 'assignments');
     toolbar.classList.toggle('drafts-mode', activeView === 'drafts');
