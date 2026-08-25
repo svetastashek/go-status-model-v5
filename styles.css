@@ -61,6 +61,11 @@ h1 { letter-spacing: -.8px; }
 .draft-label,
 .receipt-status,
 .assignment-detail-status { display: inline-block; width: fit-content; max-width: 100%; padding: 4px 8px; border-radius: 4px; background: rgba(0, 0, 0, .06); color: rgba(0, 0, 0, .88); font-size: 14px; line-height: 20px; font-weight: 400; white-space: normal; overflow-wrap: anywhere; }
+.invoice-cell:has(.progress .warning-step):not(:has(.progress .error-step)) .invoice-row-status,
+.assignment-detail-status.warning-status-label { background: #fff2c1; }
+.invoice-cell:has(.progress .error-step) .invoice-row-status,
+.assignment-detail-status.error-status-label { background: #ffedef; }
+#archiveRows .invoice-cell:has(.progress .warning-step):not(:has(.progress .error-step)) .invoice-row-status { background: rgba(0, 0, 0, .06); }
 .invoice-row-status > span { display: none; }
 .invoice-party-chip { position: relative; height: 40px; min-height: 40px; padding: 9px 0; border-radius: 0; box-shadow: none; display: inline-flex; align-items: flex-start; justify-content: center; gap: 6px; font-size: 16px; line-height: 22px; white-space: nowrap; }
 .invoice-party-chip::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: transparent; }

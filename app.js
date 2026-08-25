@@ -116,7 +116,8 @@ document.querySelectorAll('#applicationRows > .table-row, #counterpartyApplicati
   const showSupplyPoint = !isDraft || draftVariant === 0 || draftVariant === 2;
   const showCargo = !isDraft || draftVariant === 0 || draftVariant === 1;
 
-  fillApplicationCell(cells[1], showCarrier ? carrierName : '', showCarrier ? carrierAddress : '');
+  const displayedCarrierName = row.dataset.carrierName || carrierName;
+  fillApplicationCell(cells[1], showCarrier ? displayedCarrierName : '', showCarrier ? carrierAddress : '');
   fillApplicationCell(cells[2], showSupplyPoint ? supplyAddress : '', showSupplyPoint ? supplyDate : '');
   fillApplicationCell(cells[3], showCargo ? cargoName : '', showCargo ? cargoWeight : '');
   cells[3].classList.add('cargo');
@@ -441,6 +442,38 @@ additionalRejectedInvoices.forEach((data, index) => {
   archiveRowsContainer.append(row);
 });
 
+// Накладные с предупреждающим (жёлтым) этапом остаются в работе у перевозчика,
+// а не считаются отказанными.
+const yellowCarrierInvoiceRows = [];
+const yellowCarrierInvoiceTypes = new Set();
+archiveRowsContainer
+  .querySelectorAll('.table-row[data-archive-section="rejected"]')
+  .forEach((row) => {
+    if (!row.querySelector('.progress .warning-step')) return;
+    const type = row.querySelector('.invoice-row-status')?.textContent.trim();
+    if (yellowCarrierInvoiceTypes.has(type)) {
+      row.remove();
+      return;
+    }
+    yellowCarrierInvoiceTypes.add(type);
+    row.removeAttribute('data-archive-section');
+    row.dataset.yellowCarrierInvoice = 'true';
+    yellowCarrierInvoiceRows.push(row);
+  });
+
+const regularCarrierInvoiceRows = [...carrierInvoiceContainer.querySelectorAll(':scope > .table-row')]
+  .filter((row) => row.dataset.status !== 'unloading');
+const mixedCarrierInvoiceRows = [];
+const yellowInsertAfter = new Set([1, 4, 7, 10]);
+regularCarrierInvoiceRows.forEach((row, index) => {
+  mixedCarrierInvoiceRows.push(row);
+  if (yellowInsertAfter.has(index) && yellowCarrierInvoiceRows.length) {
+    mixedCarrierInvoiceRows.push(yellowCarrierInvoiceRows.shift());
+  }
+});
+mixedCarrierInvoiceRows.push(...yellowCarrierInvoiceRows);
+mixedCarrierInvoiceRows.forEach((row) => carrierInvoiceContainer.append(row));
+
 const completedInvoiceTypes = {
   delivery: {
     tag: 'Т4',
@@ -630,7 +663,7 @@ shipperAssignmentRows.forEach((row) => {
   const isError = row.dataset.status === 'assignment-error';
   const statusText = isError
     ? 'Ошибка подписи грузоотправителя'
-    : 'Требует подписи грузоотправителя';
+    : 'Требует моей подписи';
   const status = document.createElement('span');
   status.className = 'invoice-row-status';
   status.textContent = statusText;
@@ -1249,7 +1282,7 @@ function populateFilterOptions() {
     assignmentTopStatusFilter.length = 1;
     const archiveAssignmentStatuses = [
       ['assignment-completed', 'Документооборот завершен'],
-      ['assignment-signature', 'Требует подписи грузоотправителя'],
+      ['assignment-signature', 'Требует моей подписи'],
       ['assignment-carrier', 'Требует подписи экспедитора'],
       ['assignment-error', 'Ошибка подписи грузоотправителя'],
       ['assignment-draft', 'Черновик'],
@@ -1264,12 +1297,12 @@ function populateFilterOptions() {
         ? [['assignment-carrier', 'Требует подписи экспедитора']]
         : activeView === 'working-all'
           ? [
-            ['assignment-signature', 'Требует подписи грузоотправителя'],
+            ['assignment-signature', 'Требует моей подписи'],
             ['assignment-error', 'Ошибка подписи грузоотправителя'],
             ['assignment-carrier', 'Требует подписи экспедитора'],
           ]
         : [
-        ['assignment-signature', 'Требует подписи грузоотправителя'],
+        ['assignment-signature', 'Требует моей подписи'],
         ['assignment-error', 'Ошибка подписи грузоотправителя'],
       ];
     assignmentStatuses.forEach(([value, label]) => {
@@ -2288,6 +2321,8 @@ function openAssignmentDetail(row, returnTarget = row) {
   const assignmentRowStatus = getDocumentRowStatus(row);
   assignmentDetailStatus.textContent = assignmentRowStatus;
   assignmentDetailStatus.classList.remove('application-status-waiting', 'application-status-error');
+  assignmentDetailStatus.classList.toggle('warning-status-label', Boolean(row.querySelector('.progress .warning-step')));
+  assignmentDetailStatus.classList.toggle('error-status-label', Boolean(row.querySelector('.progress .error-step')));
   assignmentDetailStatus.hidden = !assignmentRowStatus;
   receiptDetailView.hidden = true;
   applicationDetailView.hidden = true;
@@ -2347,6 +2382,8 @@ function openApplicationDetail(row) {
   applicationEditAction.hidden = isSignatureError || isReadOnlyApplication;
   applicationDetailStatus.textContent = applicationRowStatus;
   applicationDetailStatus.classList.remove('application-status-waiting', 'application-status-error');
+  applicationDetailStatus.classList.toggle('warning-status-label', Boolean(row.querySelector('.progress .warning-step')));
+  applicationDetailStatus.classList.toggle('error-status-label', Boolean(row.querySelector('.progress .error-step')));
   applicationDetailStatus.hidden = !applicationRowStatus;
   applicationCompletedTabs.forEach((tab) => { tab.hidden = !isArchiveFinalApplication; });
   receiptDetailView.hidden = true;
@@ -2423,6 +2460,10 @@ function openInvoiceDetail(row) {
   lastOpenedInvoiceRow = row;
   invoiceDetailNumber.textContent = number;
   invoiceDetailStatus.textContent = invoiceRowStatus;
+  const hasNonArchiveWarningStatus = Boolean(invoiceCell.querySelector('.progress .warning-step'))
+    && !row.closest('#archiveRows');
+  invoiceDetailStatus.classList.toggle('warning-status-label', hasNonArchiveWarningStatus);
+  invoiceDetailStatus.classList.toggle('error-status-label', Boolean(invoiceCell.querySelector('.progress .error-step')));
   invoiceDetailStatus.hidden = !invoiceRowStatus;
   invoiceInfoNumber.textContent = number;
   invoiceInfoDate.textContent = normalizeDetailDate(invoiceCell.querySelector('.muted')?.textContent || '23.07');
