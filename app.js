@@ -662,7 +662,7 @@ shipperAssignmentRows.forEach((row) => {
 
   const isError = row.dataset.status === 'assignment-error';
   const statusText = isError
-    ? 'Ошибка подписи грузоотправителя'
+    ? 'Требует повторной подписи'
     : 'Требует моей подписи';
   const status = document.createElement('span');
   status.className = 'invoice-row-status';
@@ -1284,7 +1284,7 @@ function populateFilterOptions() {
       ['assignment-completed', 'Документооборот завершен'],
       ['assignment-signature', 'Требует моей подписи'],
       ['assignment-carrier', 'Требует подписи экспедитора'],
-      ['assignment-error', 'Ошибка подписи грузоотправителя'],
+      ['assignment-error', 'Требует повторной подписи'],
       ['assignment-draft', 'Черновик'],
     ];
     const assignmentStatuses = activeView === 'invoice-all'
@@ -1298,12 +1298,12 @@ function populateFilterOptions() {
         : activeView === 'working-all'
           ? [
             ['assignment-signature', 'Требует моей подписи'],
-            ['assignment-error', 'Ошибка подписи грузоотправителя'],
+            ['assignment-error', 'Требует повторной подписи'],
             ['assignment-carrier', 'Требует подписи экспедитора'],
           ]
         : [
         ['assignment-signature', 'Требует моей подписи'],
-        ['assignment-error', 'Ошибка подписи грузоотправителя'],
+        ['assignment-error', 'Требует повторной подписи'],
       ];
     assignmentStatuses.forEach(([value, label]) => {
       const option = document.createElement('option');
