@@ -6,8 +6,14 @@
   --accent: #00bfa5;
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 * { box-sizing: border-box; }
-body { margin: 0; color: var(--text); background: #fff; font-family: 'Lab Grotesque', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; }
+body { margin: 0; color: var(--text); background: #fff; font-family: 'Lab Grotesque', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-kerning: normal; }
 button, input { font: inherit; color: inherit; }
 button { background: none; border: 0; cursor: pointer; }
 .app-shell { min-height: 100vh; display: flex; position: relative; overflow-x: hidden; }
